@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FitCard — Create account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/theme.css">
+<style>
+  :root{
+    --ink:#0E1116; --surface:#171B22; --surface-2:#1F2530;
+    --line:#2A313D; --text:#F2F4F8; --muted:#9AA4B2;
+    --gold:#E5C07B; --mint:#34D399; --rose:#F87171;
+    --r:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      radial-gradient(900px 500px at 15% -10%, #1a2130 0%, transparent 60%),
+      radial-gradient(700px 500px at 110% 10%, #201a2b 0%, transparent 55%),
+      var(--ink);
+    background-attachment:fixed;
+    color:var(--text); min-height:100vh; line-height:1.5;
+    display:flex; align-items:center; justify-content:center; padding:40px 20px;
+  }
+  .aurora{position:fixed; inset:0; z-index:0; pointer-events:none}
+  .aurora span{position:absolute; border-radius:50%; filter:blur(100px); opacity:.25}
+  .aurora span:nth-child(1){width:480px; height:480px; background:#3730a3; top:-160px; right:-140px}
+  .aurora span:nth-child(2){width:420px; height:420px; background:#7c3aed; bottom:-120px; left:-140px}
+
+  .card{position:relative; z-index:1; width:100%; max-width:400px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
+    padding:38px 34px; box-shadow:0 30px 70px rgba(0,0,0,.4);
+    animation:fadeUp .5s ease forwards;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:translateY(0)}}
+
+  .brand{font-family:var(--serif); font-style:italic; font-weight:600; font-size:20px;
+    display:flex; align-items:center; gap:8px; color:var(--text); text-decoration:none; margin-bottom:26px}
+  .brand .chip{width:20px;height:15px;border-radius:4px;
+    background:linear-gradient(135deg,#f6e2a8,#c9a24a); display:inline-block}
+
+  h1{font-family:var(--serif); font-weight:500; font-style:italic; font-size:28px; margin-bottom:6px}
+  .sub{color:var(--muted); font-size:14px; margin-bottom:26px}
+
+  .field{display:flex; flex-direction:column; gap:6px; margin-bottom:18px}
+  label{font-size:12px; color:var(--muted); font-weight:500; letter-spacing:.04em; text-transform:uppercase}
+  input{
+    background:var(--surface-2); border:1px solid var(--line); border-radius:8px;
+    color:var(--text); padding:11px 12px; font-size:15px; font-family:'Inter',sans-serif; width:100%;
+    transition:border-color .2s;
+  }
+  input:focus{outline:none; border-color:var(--gold)}
+  .hint{font-size:12px; color:var(--muted); margin-top:-10px; margin-bottom:18px}
+
+  button{
+    width:100%; background:linear-gradient(180deg,#f0d090,#d8ab55);
+    color:#211a09; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    font-size:15px; border:none; border-radius:10px; padding:13px 20px;
+    cursor:pointer; margin-top:6px; transition:filter .15s;
+  }
+  button:hover{filter:brightness(1.06)}
+
+  .error{background:rgba(248,113,113,.1); border:1px solid rgba(248,113,113,.4); color:var(--rose);
+    font-size:13px; padding:10px 12px; border-radius:8px; margin-bottom:18px}
+
+  .divider{display:flex; align-items:center; gap:12px; margin:22px 0; color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  .btn-google{
+    width:100%; display:flex; align-items:center; justify-content:center; gap:10px;
+    background:var(--surface-2); border:1px solid var(--line); color:var(--text);
+    font-family:'Inter',sans-serif; font-weight:500; font-size:14px;
+    padding:11px 20px; border-radius:10px; cursor:pointer; text-decoration:none;
+    transition:border-color .15s;
+  }
+  .btn-google:hover{border-color:var(--gold)}
+  .btn-google svg{width:16px; height:16px}
+
+  .foot{margin-top:24px; text-align:center; font-size:13px; color:var(--muted)}
+  .foot a{color:var(--gold); text-decoration:none; font-weight:500}
+  .foot a:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="grain"></div>
+<div class="aurora"><span></span><span></span></div>
+
+<div class="card">
+  <a href="/" class="brand"><span class="chip"></span>FitCard</a>
+  <h1>Create your account</h1>
+  <p class="sub">One login, every card compared for you.</p>
+
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+
+  <form method="POST" action="/signup">
+    <div class="field">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" autofocus>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required minlength="8">
+    </div>
+    <p class="hint">At least 8 characters.</p>
+    <button type="submit">Create account</button>
+  </form>
+
+  {% if google_enabled %}
+  <div class="divider">or</div>
+  <a href="/auth/google" class="btn-google">
+    <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3 12.4 3 3 12.4 3 24s9.4 21 21 21 21-9.4 21-21c0-1.4-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.8 1.1 8 3l6-6C34.5 5.1 29.5 3 24 3c-7.4 0-13.8 4.2-17 10.3z"/><path fill="#4CAF50" d="M24 45c5.4 0 10.3-1.8 14.1-5l-6.5-5.5C29.5 36 26.9 37 24 37c-5.2 0-9.6-3.3-11.2-8l-6.6 5.1C9.1 40.6 16 45 24 45z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.2 4.2-4.1 5.5l6.5 5.5C41.5 35.7 45 30.5 45 24c0-1.4-.1-2.7-.4-3.5z"/></svg>
+    Continue with Google
+  </a>
+  {% endif %}
+
+  <div class="foot">Already have an account? <a href="/login">Sign in</a></div>
+</div>
+
+</body>
+</html>
