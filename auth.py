@@ -30,6 +30,7 @@ class User(UserMixin):
         self.name = row["name"]
         self.password_hash = row["password_hash"]
         self.google_sub = row["google_sub"]
+        self.phone = row["phone"] if "phone" in row.keys() else None
 
     @staticmethod
     def get(user_id):
@@ -46,17 +47,31 @@ class User(UserMixin):
         return User(row) if row else None
 
     @staticmethod
-    def create(email, password=None, name=None, google_sub=None):
+    def get_by_phone(phone):
+        conn = get_db()
+        row = conn.execute("SELECT * FROM users WHERE phone = ?", (phone,)).fetchone()
+        conn.close()
+        return User(row) if row else None
+
+    @staticmethod
+    def create(email, password=None, name=None, google_sub=None, phone=None):
         conn = get_db()
         pw_hash = generate_password_hash(password, method="pbkdf2:sha256") if password else None
         cur = conn.execute(
-            "INSERT INTO users (email, password_hash, name, google_sub) VALUES (?, ?, ?, ?)",
-            (email.lower(), pw_hash, name, google_sub),
+            "INSERT INTO users (email, password_hash, name, google_sub, phone) VALUES (?, ?, ?, ?, ?)",
+            (email.lower(), pw_hash, name, google_sub, phone or None),
         )
         conn.commit()
         user_id = cur.lastrowid
         conn.close()
         return User.get(user_id)
+
+    def set_phone(self, phone):
+        conn = get_db()
+        conn.execute("UPDATE users SET phone = ? WHERE id = ?", (phone, self.id))
+        conn.commit()
+        conn.close()
+        self.phone = phone
 
     def check_password(self, password):
         if not self.password_hash:

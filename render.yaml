@@ -16,3 +16,9 @@ services:
         sync: false
       - key: INSURANCE_SERVICE_URL
         sync: false
+      - key: MSG91_AUTH_KEY
+        sync: false
+      - key: MSG91_SMS_TEMPLATE_ID
+        sync: false
+      - key: MSG91_EMAIL_TEMPLATE_ID
+        sync: false

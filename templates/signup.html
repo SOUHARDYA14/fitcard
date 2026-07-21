@@ -110,6 +110,11 @@
       <input type="password" id="password" name="password" required minlength="8">
     </div>
     <p class="hint">At least 8 characters.</p>
+    <div class="field">
+      <label for="phone">Phone (optional)</label>
+      <input type="tel" id="phone" name="phone" placeholder="919876543210" pattern="\d{10,15}">
+    </div>
+    <p class="hint">With country code, digits only. Lets you sign in with an SMS code instead of your password.</p>
     <button type="submit">Create account</button>
   </form>
 

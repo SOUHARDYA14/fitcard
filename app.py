@@ -1,13 +1,16 @@
 import json
 import os
+import random
+import re
 import sqlite3
 
 import requests
 from dotenv import load_dotenv
-from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
+from flask import Flask, Response, jsonify, redirect, render_template, request, session, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 import auth
+import msg91
 import scoring
 from auth import User
 
@@ -34,6 +37,13 @@ app.secret_key = secret_key
 
 google_enabled = auth.init_auth(app)
 
+DEV_OTP_ALLOWED = os.environ.get("FLASK_DEBUG") == "1"
+
+PUBLIC_ENDPOINTS = {
+    "login", "login_phone", "login_verify", "login_resend",
+    "signup", "auth_google", "auth_google_callback", "static",
+}
+
 
 def get_db_connection():
     conn = sqlite3.connect("credit_cards.db")
@@ -46,7 +56,60 @@ def inject_globals():
     return {"google_enabled": google_enabled}
 
 
+@app.before_request
+def require_login():
+    if request.endpoint is None or request.endpoint in PUBLIC_ENDPOINTS:
+        return
+    if not current_user.is_authenticated:
+        session["post_login_next"] = request.full_path if request.query_string else request.path
+        return redirect(url_for("login"))
+
+
 # ---------------------------------------------------------------- auth ----
+# Every login (password or phone) is followed by an MSG91 OTP challenge sent
+# to the matching email/phone before a session is actually established. In
+# local dev without MSG91 credentials, a random code is shown on-screen
+# instead of being sent, so the flow can still be exercised end to end.
+
+def _mask(contact):
+    if "@" in contact:
+        name, _, domain = contact.partition("@")
+        return f"{name[:1]}{'*' * max(len(name) - 1, 1)}@{domain}"
+    return f"{'*' * max(len(contact) - 4, 0)}{contact[-4:]}"
+
+
+def _start_otp_challenge(user, channel):
+    contact = user.email if channel == "email" else user.phone
+    try:
+        if channel == "email":
+            msg91.send_otp(email=contact)
+        else:
+            msg91.send_otp(phone=contact)
+        session.pop("dev_otp", None)
+    except msg91.Msg91NotConfigured:
+        if not DEV_OTP_ALLOWED:
+            raise
+        session["dev_otp"] = f"{random.randint(0, 999999):06d}"
+
+    session["pending_uid"] = user.id
+    session["pending_channel"] = channel
+    session["pending_contact"] = contact
+
+
+def _verify_otp_challenge(code):
+    channel = session.get("pending_channel")
+    contact = session.get("pending_contact")
+    if "dev_otp" in session:
+        return code == session["dev_otp"]
+    if channel == "email":
+        return msg91.verify_otp(code, email=contact)
+    return msg91.verify_otp(code, phone=contact)
+
+
+def _clear_otp_challenge():
+    for key in ("pending_uid", "pending_channel", "pending_contact", "dev_otp"):
+        session.pop(key, None)
+
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
@@ -58,17 +121,27 @@ def signup():
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
         name = (request.form.get("name") or "").strip()
+        phone = (request.form.get("phone") or "").strip() or None
+        phone_invalid = phone is not None and not re.fullmatch(r"\d{10,15}", phone)
 
         if not email or "@" not in email:
             error = "Enter a valid email address."
         elif len(password) < 8:
             error = "Password must be at least 8 characters."
+        elif phone_invalid:
+            error = "Phone number should be digits only, with country code (e.g. 919876543210)."
         elif User.get_by_email(email):
             error = "An account with that email already exists."
+        elif phone and User.get_by_phone(phone):
+            error = "An account with that phone number already exists."
         else:
-            user = User.create(email=email, password=password, name=name or None)
-            login_user(user)
-            return redirect(url_for("params_form"))
+            user = User.create(email=email, password=password, name=name or None, phone=phone)
+            try:
+                _start_otp_challenge(user, "email")
+            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+                error = "Couldn't send a verification code right now. Try again shortly."
+            else:
+                return redirect(url_for("login_verify"))
 
     return render_template("signup.html", error=error)
 
@@ -84,11 +157,82 @@ def login():
         password = request.form.get("password") or ""
         user = User.get_by_email(email)
         if user and user.check_password(password):
-            login_user(user)
-            return redirect(url_for("params_form"))
-        error = "Incorrect email or password."
+            try:
+                _start_otp_challenge(user, "email")
+            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+                error = "Couldn't send a verification code right now. Try again shortly."
+            else:
+                return redirect(url_for("login_verify"))
+        else:
+            error = "Incorrect email or password."
 
     return render_template("login.html", error=error)
+
+
+@app.route("/login/phone", methods=["GET", "POST"])
+def login_phone():
+    if current_user.is_authenticated:
+        return redirect(url_for("params_form"))
+
+    error = None
+    if request.method == "POST":
+        phone = (request.form.get("phone") or "").strip()
+        user = User.get_by_phone(phone) if phone else None
+        if not user:
+            error = "No account is linked to that phone number."
+        else:
+            try:
+                _start_otp_challenge(user, "phone")
+            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+                error = "Couldn't send a verification code right now. Try again shortly."
+            else:
+                return redirect(url_for("login_verify"))
+
+    return render_template("login_phone.html", error=error)
+
+
+@app.route("/login/verify", methods=["GET", "POST"])
+def login_verify():
+    if current_user.is_authenticated:
+        return redirect(url_for("params_form"))
+    if "pending_uid" not in session:
+        return redirect(url_for("login"))
+
+    error = None
+    if request.method == "POST":
+        code = (request.form.get("otp") or "").strip()
+        if _verify_otp_challenge(code):
+            user = User.get(session["pending_uid"])
+            next_url = session.pop("post_login_next", None)
+            _clear_otp_challenge()
+            login_user(user)
+            return redirect(next_url or url_for("params_form"))
+        error = "That code didn't match. Check it and try again."
+
+    return render_template(
+        "verify_otp.html",
+        error=error,
+        contact=_mask(session["pending_contact"]),
+        dev_otp=session.get("dev_otp"),
+    )
+
+
+@app.route("/login/resend", methods=["POST"])
+def login_resend():
+    if "pending_uid" not in session:
+        return redirect(url_for("login"))
+    channel = session["pending_channel"]
+    contact = session["pending_contact"]
+    try:
+        if "dev_otp" in session:
+            session["dev_otp"] = f"{random.randint(0, 999999):06d}"
+        elif channel == "email":
+            msg91.resend_otp(email=contact)
+        else:
+            msg91.resend_otp(phone=contact)
+    except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+        pass
+    return redirect(url_for("login_verify"))
 
 
 @app.route("/logout")
