@@ -5,3 +5,4 @@ __pycache__/
 *.db.bak_old_schema
 .DS_Store
 *.log
+firebase-service-account.json

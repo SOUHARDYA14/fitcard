@@ -22,3 +22,9 @@ services:
         sync: false
       - key: MSG91_EMAIL_TEMPLATE_ID
         sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false

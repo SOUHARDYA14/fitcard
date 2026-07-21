@@ -10,7 +10,9 @@ from flask import Flask, Response, jsonify, redirect, render_template, request, 
 from flask_login import current_user, login_required, login_user, logout_user
 
 import auth
+import firebase_otp
 import msg91
+import resend_email
 import scoring
 from auth import User
 
@@ -66,10 +68,21 @@ def require_login():
 
 
 # ---------------------------------------------------------------- auth ----
-# Every login (password or phone) is followed by an MSG91 OTP challenge sent
-# to the matching email/phone before a session is actually established. In
-# local dev without MSG91 credentials, a random code is shown on-screen
-# instead of being sent, so the flow can still be exercised end to end.
+# Every login (password or phone) is followed by an OTP challenge sent to
+# the matching email/phone before a session is actually established. Email
+# codes are generated/stored in Firestore and delivered via Resend (Firebase
+# Auth itself has no built-in typed-code-by-email product -- see
+# firebase_otp.py); phone codes still go through MSG91. In local dev without
+# those credentials configured, a random code is shown on-screen instead of
+# being sent, so the flow can still be exercised end to end.
+
+_NOT_CONFIGURED_ERRORS = (
+    msg91.Msg91NotConfigured,
+    resend_email.ResendNotConfigured,
+    RuntimeError,  # firebase_otp raises this if the service account key is missing
+)
+_SEND_ERRORS = _NOT_CONFIGURED_ERRORS + (msg91.Msg91Error, resend_email.ResendError)
+
 
 def _mask(contact):
     if "@" in contact:
@@ -80,13 +93,15 @@ def _mask(contact):
 
 def _start_otp_challenge(user, channel):
     contact = user.email if channel == "email" else user.phone
+    challenge_id = None
     try:
         if channel == "email":
-            msg91.send_otp(email=contact)
+            challenge_id, code = firebase_otp.create_challenge(contact, app_name="creditcard")
+            resend_email.send_otp_email(contact, code)
         else:
             msg91.send_otp(phone=contact)
         session.pop("dev_otp", None)
-    except msg91.Msg91NotConfigured:
+    except _NOT_CONFIGURED_ERRORS:
         if not DEV_OTP_ALLOWED:
             raise
         session["dev_otp"] = f"{random.randint(0, 999999):06d}"
@@ -94,6 +109,7 @@ def _start_otp_challenge(user, channel):
     session["pending_uid"] = user.id
     session["pending_channel"] = channel
     session["pending_contact"] = contact
+    session["pending_challenge_id"] = challenge_id
 
 
 def _verify_otp_challenge(code):
@@ -102,12 +118,12 @@ def _verify_otp_challenge(code):
     if "dev_otp" in session:
         return code == session["dev_otp"]
     if channel == "email":
-        return msg91.verify_otp(code, email=contact)
+        return firebase_otp.verify_challenge(session.get("pending_challenge_id"), code)
     return msg91.verify_otp(code, phone=contact)
 
 
 def _clear_otp_challenge():
-    for key in ("pending_uid", "pending_channel", "pending_contact", "dev_otp"):
+    for key in ("pending_uid", "pending_channel", "pending_contact", "pending_challenge_id", "dev_otp"):
         session.pop(key, None)
 
 
@@ -138,7 +154,7 @@ def signup():
             user = User.create(email=email, password=password, name=name or None, phone=phone)
             try:
                 _start_otp_challenge(user, "email")
-            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+            except _SEND_ERRORS:
                 error = "Couldn't send a verification code right now. Try again shortly."
             else:
                 return redirect(url_for("login_verify"))
@@ -159,7 +175,7 @@ def login():
         if user and user.check_password(password):
             try:
                 _start_otp_challenge(user, "email")
-            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+            except _SEND_ERRORS:
                 error = "Couldn't send a verification code right now. Try again shortly."
             else:
                 return redirect(url_for("login_verify"))
@@ -183,7 +199,7 @@ def login_phone():
         else:
             try:
                 _start_otp_challenge(user, "phone")
-            except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+            except _SEND_ERRORS:
                 error = "Couldn't send a verification code right now. Try again shortly."
             else:
                 return redirect(url_for("login_verify"))
@@ -201,13 +217,23 @@ def login_verify():
     error = None
     if request.method == "POST":
         code = (request.form.get("otp") or "").strip()
-        if _verify_otp_challenge(code):
-            user = User.get(session["pending_uid"])
-            next_url = session.pop("post_login_next", None)
+        try:
+            verified = _verify_otp_challenge(code)
+        except firebase_otp.ChallengeExpired:
+            error = "That code expired. Request a new one below."
+        except firebase_otp.TooManyAttempts:
+            error = "Too many wrong attempts. Request a new code below."
+        except firebase_otp.ChallengeNotFound:
             _clear_otp_challenge()
-            login_user(user)
-            return redirect(next_url or url_for("params_form"))
-        error = "That code didn't match. Check it and try again."
+            return redirect(url_for("login"))
+        else:
+            if verified:
+                user = User.get(session["pending_uid"])
+                next_url = session.pop("post_login_next", None)
+                _clear_otp_challenge()
+                login_user(user)
+                return redirect(next_url or url_for("params_form"))
+            error = "That code didn't match. Check it and try again."
 
     return render_template(
         "verify_otp.html",
@@ -227,11 +253,15 @@ def login_resend():
         if "dev_otp" in session:
             session["dev_otp"] = f"{random.randint(0, 999999):06d}"
         elif channel == "email":
-            msg91.resend_otp(email=contact)
+            code = firebase_otp.regenerate_code(session["pending_challenge_id"])
+            resend_email.send_otp_email(contact, code)
         else:
             msg91.resend_otp(phone=contact)
-    except (msg91.Msg91NotConfigured, msg91.Msg91Error):
+    except _SEND_ERRORS:
         pass
+    except firebase_otp.ChallengeNotFound:
+        _clear_otp_challenge()
+        return redirect(url_for("login"))
     return redirect(url_for("login_verify"))
 
 
