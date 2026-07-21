@@ -7,7 +7,7 @@ import sqlite3
 import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, redirect, render_template, request, session, url_for
-from flask_login import current_user, login_required, login_user, logout_user
+from flask_login import current_user, login_user, logout_user
 
 import auth
 import firebase_otp
@@ -41,12 +41,6 @@ google_enabled = auth.init_auth(app)
 
 DEV_OTP_ALLOWED = os.environ.get("FLASK_DEBUG") == "1"
 
-PUBLIC_ENDPOINTS = {
-    "login", "login_phone", "login_verify", "login_resend",
-    "signup", "auth_google", "auth_google_callback", "static",
-}
-
-
 def get_db_connection():
     conn = sqlite3.connect("credit_cards.db")
     conn.row_factory = sqlite3.Row
@@ -56,15 +50,6 @@ def get_db_connection():
 @app.context_processor
 def inject_globals():
     return {"google_enabled": google_enabled}
-
-
-@app.before_request
-def require_login():
-    if request.endpoint is None or request.endpoint in PUBLIC_ENDPOINTS:
-        return
-    if not current_user.is_authenticated:
-        session["post_login_next"] = request.full_path if request.query_string else request.path
-        return redirect(url_for("login"))
 
 
 # ---------------------------------------------------------------- auth ----
@@ -229,10 +214,9 @@ def login_verify():
         else:
             if verified:
                 user = User.get(session["pending_uid"])
-                next_url = session.pop("post_login_next", None)
                 _clear_otp_challenge()
                 login_user(user)
-                return redirect(next_url or url_for("params_form"))
+                return redirect(url_for("params_form"))
             error = "That code didn't match. Check it and try again."
 
     return render_template(
@@ -266,9 +250,9 @@ def login_resend():
 
 
 @app.route("/logout")
-@login_required
 def logout():
-    logout_user()
+    if current_user.is_authenticated:
+        logout_user()
     return redirect(url_for("welcome"))
 
 
@@ -310,7 +294,6 @@ def welcome():
 
 
 @app.route("/match")
-@login_required
 def params_form():
     conn = get_db_connection()
     banks = conn.execute("SELECT id, bank_name FROM banks ORDER BY bank_name").fetchall()
@@ -343,17 +326,17 @@ def all_cards():
 
 
 @app.route("/recommend", methods=["POST"])
-@login_required
 def recommend():
     data = request.get_json(force=True) or {}
     conn = get_db_connection()
     result = scoring.recommend(conn, data)
 
-    conn.execute(
-        "INSERT INTO saved_recommendations (user_id, inputs_json, results_json) VALUES (?, ?, ?)",
-        (current_user.id, json.dumps(data), json.dumps(result["results"])),
-    )
-    conn.commit()
+    if current_user.is_authenticated:
+        conn.execute(
+            "INSERT INTO saved_recommendations (user_id, inputs_json, results_json) VALUES (?, ?, ?)",
+            (current_user.id, json.dumps(data), json.dumps(result["results"])),
+        )
+        conn.commit()
     conn.close()
 
     return jsonify(result)
