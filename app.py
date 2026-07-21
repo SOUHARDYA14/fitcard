@@ -2,8 +2,9 @@ import json
 import os
 import sqlite3
 
+import requests
 from dotenv import load_dotenv
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+from flask import Flask, Response, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 import auth
@@ -13,6 +14,11 @@ from auth import User
 load_dotenv()
 
 app = Flask(__name__)
+
+INSURANCE_SERVICE_URL = os.environ.get("INSURANCE_SERVICE_URL", "").rstrip("/")
+_EXCLUDED_RESPONSE_HEADERS = {
+    "content-encoding", "content-length", "transfer-encoding", "connection",
+}
 
 secret_key = os.environ.get("FLASK_SECRET_KEY")
 if not secret_key:
@@ -177,6 +183,43 @@ def recommend():
     conn.close()
 
     return jsonify(result)
+
+
+# --------------------------------------------------------- insurance ----
+
+@app.route(
+    "/insurance",
+    defaults={"path": ""},
+    strict_slashes=False,
+    methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
+)
+@app.route("/insurance/<path:path>", methods=["GET", "POST", "PUT", "PATCH", "DELETE"])
+def insurance_proxy(path):
+    if not INSURANCE_SERVICE_URL:
+        return "Insurance service is not configured.", 502
+
+    target_url = f"{INSURANCE_SERVICE_URL}/insurance/{path}" if path else f"{INSURANCE_SERVICE_URL}/insurance"
+    forward_headers = {k: v for k, v in request.headers if k.lower() != "host"}
+
+    try:
+        upstream = requests.request(
+            method=request.method,
+            url=target_url,
+            headers=forward_headers,
+            params=list(request.args.items(multi=True)),
+            data=request.get_data(),
+            cookies=request.cookies,
+            allow_redirects=False,
+            timeout=60,
+        )
+    except requests.RequestException:
+        return "The insurance service is unavailable right now.", 502
+
+    response_headers = [
+        (k, v) for k, v in upstream.raw.headers.items()
+        if k.lower() not in _EXCLUDED_RESPONSE_HEADERS
+    ]
+    return Response(upstream.content, status=upstream.status_code, headers=response_headers)
 
 
 if __name__ == "__main__":

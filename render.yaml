@@ -14,3 +14,5 @@ services:
         sync: false
       - key: GOOGLE_CLIENT_SECRET
         sync: false
+      - key: INSURANCE_SERVICE_URL
+        sync: false
