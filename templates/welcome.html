@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/tokens.css">
 <link rel="stylesheet" href="/static/theme.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -22,7 +23,7 @@
   /* ---- Sparkles ---- */
   .sparkles{position:fixed; inset:0; z-index:0; pointer-events:none}
   .sparkles span{position:absolute; width:3px; height:3px; border-radius:50%;
-    background:var(--gold); opacity:0; box-shadow:0 0 6px 1px rgba(229,192,123,.8);
+    background:var(--gold); opacity:0; box-shadow:0 0 6px 1px rgba(180,122,32,.8);
     animation:twinkle linear infinite}
   @keyframes twinkle{
     0%,100%{opacity:0; transform:scale(.6)}
@@ -36,7 +37,7 @@
   .brand{font-family:var(--serif); font-style:italic; font-weight:600; font-size:22px; letter-spacing:-.01em;
     display:flex; align-items:center; gap:9px; color:var(--ink1); text-decoration:none}
   .brand .chip{width:22px;height:16px;border-radius:4px;
-    background:linear-gradient(135deg,#f6e2a8,#c9a24a); display:inline-block}
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold-strong)); display:inline-block}
   .nav-right{display:flex; align-items:center; gap:28px}
   .issue-tag{font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.2em; color:var(--ink3);
     text-transform:uppercase; display:none}
@@ -68,12 +69,12 @@
   }
   h1 em{
     font-style:italic; font-weight:600;
-    /* Darker gold pair than the brand token -- the plain #E5C07B gold reads
-       at ~1.8:1 against the wash's white middle, well under the 3:1 large-text
-       floor. #8a6a2f/#c9a24a keep the shimmer but land ~5:1. */
-    background:linear-gradient(90deg,#8a6a2f 0%,#c9a24a 45%,#8a6a2f 90%);
+    /* --amberInk anchors / --gold-soft highlight, not the plain --gold
+       accent -- #E5C07B-family gold reads at ~1.8:1 against the wash's
+       white middle, well under the 3:1 large-text floor. This pair lands ~5:1. */
+    background:linear-gradient(90deg,var(--amberInk) 0%,var(--gold-soft) 45%,var(--amberInk) 90%);
     background-size:220% auto; background-position:0% center;
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:#8a6a2f;
+    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:var(--amberInk);
     animation:shimmerText 4s linear infinite;
   }
   @keyframes shimmerText{to{background-position:-220% center}}
@@ -92,8 +93,8 @@
   }
   .btn:active{transform:scale(.98)}
   .btn-primary{
-    background:linear-gradient(180deg,#f0d090,#d8ab55); color:#211a09;
-    box-shadow:0 0 0 0 rgba(229,192,123,.5);
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold-strong)); color:var(--on-gold);
+    box-shadow:0 0 0 0 rgba(180,122,32,.5);
     animation:pulseGlow 2.6s ease-in-out infinite;
   }
   .btn-primary:hover{filter:brightness(1.06)}
@@ -102,8 +103,8 @@
   }
   .btn-secondary:hover{border-color:var(--gold)}
   @keyframes pulseGlow{
-    0%,100%{box-shadow:0 0 0 0 rgba(229,192,123,.35)}
-    50%{box-shadow:0 0 0 10px rgba(229,192,123,0)}
+    0%,100%{box-shadow:0 0 0 0 rgba(180,122,32,.35)}
+    50%{box-shadow:0 0 0 10px rgba(180,122,32,0)}
   }
   @keyframes fadeUp{from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:translateY(0)}}
 

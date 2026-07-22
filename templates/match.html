@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/tokens.css">
 <link rel="stylesheet" href="/static/theme.css">
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -25,7 +26,7 @@
   .brand{font-family:var(--serif); font-style:italic; font-weight:600; font-size:19px; letter-spacing:-.01em;
     display:flex; align-items:center; gap:8px; color:var(--ink1); text-decoration:none}
   .brand .chip{width:20px;height:15px;border-radius:4px;
-    background:linear-gradient(135deg,#f6e2a8,#c9a24a); display:inline-block}
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold-strong)); display:inline-block}
   .nav-right{display:flex; align-items:center; gap:18px}
   .browse-link{font-size:13px; color:var(--ink3); text-decoration:none; font-weight:500; white-space:nowrap;
     transition:color .15s}
@@ -91,7 +92,7 @@
   /* checked state's fill is translucent gold, not opaque -- the wash shows
      through the other 86%, so the label needs dark ink here, not var(--text)
      (which assumed the old dark page background was behind it). */
-  .chip-toggle:has(input:checked){background:rgba(229,192,123,.14); border-color:var(--gold); color:var(--ink1)}
+  .chip-toggle:has(input:checked){background:rgba(180,122,32,.14); border-color:var(--gold); color:var(--ink1)}
 
   .radio-row{display:flex; flex-wrap:wrap; gap:8px}
   .radio-toggle{
@@ -101,12 +102,12 @@
     user-select:none;
   }
   .radio-toggle input{display:none}
-  .radio-toggle:has(input:checked){background:rgba(52,211,153,.12); border-color:var(--mint); color:var(--ink1)}
+  .radio-toggle:has(input:checked){background:rgba(31,138,91,.12); border-color:var(--mint); color:var(--ink1)}
 
   .btn-row{display:flex; justify-content:flex-end; padding:26px 0 4px}
   button.submit-btn{
-    background:linear-gradient(180deg,#f0d090,#d8ab55);
-    color:#211a09; font-family:'Space Grotesk',sans-serif; font-weight:600;
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold-strong));
+    color:var(--on-gold); font-family:'Space Grotesk',sans-serif; font-weight:600;
     font-size:15px; border:none; border-radius:10px; padding:14px 28px;
     cursor:pointer; transition:filter .15s, opacity .15s;
     display:flex; align-items:center; justify-content:center; gap:10px;
@@ -116,7 +117,7 @@
   button.submit-btn:disabled{opacity:.7; cursor:progress}
   .spinner{
     width:15px;height:15px;border-radius:50%;
-    border:2px solid rgba(33,26,9,.35); border-top-color:#211a09;
+    border:2px solid var(--on-gold-a35); border-top-color:var(--on-gold);
     animation:spin .7s linear infinite; display:none;
   }
   button.loading .spinner{display:inline-block}
@@ -134,10 +135,10 @@
   .results-sub.show{display:block; animation:fadeUp .4s ease}
   /* same translucent-fill issue as the checked chip/radio toggles above --
      the 10%-alpha gold background lets the wash show through, so bare
-     var(--gold) text (readable on the old dark bg) needs a darker gold-ink
-     tone here instead. */
-  .widened-note{display:none; font-size:13px; color:#8a6a2f; background:rgba(229,192,123,.1);
-    border:1px solid rgba(229,192,123,.3); border-radius:8px; padding:10px 14px; margin-bottom:18px}
+     var(--gold) text (readable on the old dark bg) needs --amberInk, the
+     dedicated "amber text on a light tint" token, instead. */
+  .widened-note{display:none; font-size:13px; color:var(--amberInk); background:rgba(180,122,32,.1);
+    border:1px solid rgba(180,122,32,.3); border-radius:8px; padding:10px 14px; margin-bottom:18px}
   .widened-note.show{display:block; animation:fadeUp .4s ease}
   #results{display:grid; gap:16px}
 
@@ -173,8 +174,8 @@
 
   .cc.best{animation:dealIn .65s cubic-bezier(.16,1,.3,1) forwards, bestGlow 2.6s ease-in-out .9s infinite}
   @keyframes bestGlow{
-    0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.35), 0 0 0 0 rgba(229,192,123,.35)}
-    50%{box-shadow:0 10px 30px rgba(0,0,0,.35), 0 0 0 8px rgba(229,192,123,0)}
+    0%,100%{box-shadow:0 10px 30px rgba(0,0,0,.35), 0 0 0 0 rgba(180,122,32,.35)}
+    50%{box-shadow:0 10px 30px rgba(0,0,0,.35), 0 0 0 8px rgba(180,122,32,0)}
   }
 
   .cc.t-entry   {background:linear-gradient(135deg,#0f766e,#0d9488)}
@@ -204,7 +205,7 @@
 
   .rank{
     font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:11px;
-    letter-spacing:.06em; color:#211a09; background:var(--gold);
+    letter-spacing:.06em; color:var(--on-gold); background:var(--gold);
     padding:4px 9px; border-radius:20px; text-transform:uppercase;
     display:inline-block; margin-top:16px; position:relative; z-index:1;
   }

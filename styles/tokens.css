@@ -20,43 +20,49 @@
      drops in consistently once a warning state is needed.
    ============================================================ */
 
+/* Debt #6 fix: the palette itself now lives in one file only
+   (static/tokens.css, the Lumen/WealthQ primitives) — everything
+   below is an alias onto it, not a second copy of the hex values. */
+@import "../static/tokens.css";
+
 :root{
 
   /* ----------------------------------------------------------
-     Primary colors — gold. The site's one CTA/accent color:
+     Primary colors — amber. The site's one CTA/accent color:
      buttons, focus rings, highlights, the luxury tier.
      ---------------------------------------------------------- */
-  --color-primary:        #E5C07B; /* == legacy --gold */
-  --color-primary-soft:   #f0d090; /* button gradient, top stop */
-  --color-primary-strong: #d8ab55; /* button gradient, bottom stop */
-  --color-primary-shine:  #fff6df; /* shimmer highlight in hero <em> gradient */
-  --color-on-primary:     #211a09; /* text/icons placed on a solid primary fill */
+  --color-primary:        var(--amberAccent); /* == legacy --gold, now Lumen's amber */
+  --color-primary-soft:   #d9a15c; /* button gradient, top stop -- lightened from --amberAccent */
+  --color-primary-strong: var(--amberAccent); /* button gradient, bottom stop */
+  --color-primary-shine:  #f0d9b8; /* shimmer highlight in hero <em> gradient */
+  --color-on-primary:     #2b1c08; /* text/icons placed on a solid primary fill */
 
-  /* new: brand-mark chip gradient — a lighter/brassier gold than the
+  /* brand-mark chip gradient — a lighter/brassier amber than the
      button gradient above, used by components/Navbar.css's logo chip */
-  --color-primary-chip-start: #f6e2a8;
-  --color-primary-chip-end:   #c9a24a;
+  --color-primary-chip-start: #d9a15c;
+  --color-primary-chip-end:   var(--amberAccent);
 
-  --color-primary-a0:  rgba(229,192,123,0);   /* new: glow-pulse end state (was inlined in the keyframe) */
-  --color-primary-a10: rgba(229,192,123,.1);  /* widened-note bg, subtle tint */
-  --color-primary-a14: rgba(229,192,123,.14); /* chip-toggle checked bg */
-  --color-primary-a30: rgba(229,192,123,.3);  /* widened-note border */
-  --color-primary-a35: rgba(229,192,123,.35); /* pulse/glow ring, rest state */
-  --color-primary-a40: rgba(229,192,123,.4);  /* row hover border, luxury tier border */
-  --color-primary-a50: rgba(229,192,123,.5);  /* CTA idle shadow base */
-  --color-primary-a80: rgba(229,192,123,.8);  /* sparkle glow */
+  --color-primary-a0:  rgba(180,122,32,0);   /* glow-pulse end state (was inlined in the keyframe) */
+  --color-primary-a10: rgba(180,122,32,.1);  /* widened-note bg, subtle tint */
+  --color-primary-a14: rgba(180,122,32,.14); /* chip-toggle checked bg */
+  --color-primary-a30: rgba(180,122,32,.3);  /* widened-note border */
+  --color-primary-a35: rgba(180,122,32,.35); /* pulse/glow ring, rest state */
+  --color-primary-a40: rgba(180,122,32,.4);  /* row hover border, luxury tier border */
+  --color-primary-a50: rgba(180,122,32,.5);  /* CTA idle shadow base */
+  --color-primary-a80: rgba(180,122,32,.8);  /* sparkle glow */
 
-  /* new: matches --color-on-primary (#211a09) at .35 alpha — the
-     spinner ring drawn on top of a gold button */
-  --color-on-primary-a35: rgba(33,26,9,.35);
+  /* matches --color-on-primary (#2b1c08) at .35 alpha — the
+     spinner ring drawn on top of an amber button */
+  --color-on-primary-a35: rgba(43,28,8,.35);
 
   /* ----------------------------------------------------------
      Secondary colors — indigo/violet. The second recurring accent:
-     aurora background blobs, the hero mock-card, the mid-tier
-     recommendation-card gradient.
+     the hero mock-card, the mid-tier recommendation-card gradient.
+     (No longer the aurora blobs -- those are gone, replaced by the
+     dawn wash.)
      ---------------------------------------------------------- */
   --color-secondary:       #7c3aed; /* violet — gradient end / brighter stop */
-  --color-secondary-alt:   #3730a3; /* indigo — gradient start / aurora blob */
+  --color-secondary-alt:   #3730a3; /* indigo — gradient start */
   --color-secondary-deep:  #4f46e5; /* mid-tier card gradient end */
   --color-secondary-super: #5b21b6; /* super-premium tier gradient start */
   --color-on-secondary:    #ffffff; /* text placed on the secondary gradient */
@@ -64,46 +70,46 @@
   /* ----------------------------------------------------------
      Text colors
      ---------------------------------------------------------- */
-  --color-text:             #F2F4F8; /* == legacy --text — primary copy */
-  --color-text-muted:       #9AA4B2; /* == legacy --muted — labels, captions, secondary copy */
-  --color-text-subtle:      #6B7383; /* cards.html .row-suited */
-  --color-text-faint:       #4A5261; /* footer disclaimer text */
-  --color-text-placeholder: #5B6472; /* match.html input::placeholder */
+  --color-text:             var(--ink1); /* == legacy --text — primary copy */
+  --color-text-muted:       var(--ink3); /* == legacy --muted — labels, captions, secondary copy */
+  --color-text-subtle:      var(--ink4); /* cards.html .row-suited */
+  --color-text-faint:       var(--ink5); /* footer disclaimer text */
+  --color-text-placeholder: var(--ink4); /* match.html input::placeholder */
   --color-text-on-primary:  var(--color-on-primary);
   --color-text-on-secondary:var(--color-on-secondary);
 
   /* ----------------------------------------------------------
      Background colors
      ---------------------------------------------------------- */
-  --color-bg:          #0E1116; /* == legacy --ink — page background */
-  --color-surface:     #171B22; /* == legacy --surface — auth card */
-  --color-surface-2:   #1F2530; /* == legacy --surface-2 — inputs, secondary buttons */
-  --color-bg-accent-1: #1a2130; /* body radial-gradient blob, top-left */
-  --color-bg-accent-2: #201a2b; /* body radial-gradient blob, right */
-  --color-bg-a70:      rgba(14,17,22,.7); /* new: == --color-bg at .7 — Modal backdrop dimmer */
+  --color-bg:          var(--p1); /* == legacy --ink — page background fallback; the actual
+                                      page background is .fc-ambient-glow's dawn wash, a
+                                      gradient, never this flat value */
+  --color-surface:     var(--p1); /* == legacy --surface — auth card */
+  --color-surface-2:   var(--p2); /* == legacy --surface-2 — inputs, secondary buttons */
+  --color-bg-accent-1: var(--p2); /* unused now that AmbientBackground paints the wash directly */
+  --color-bg-accent-2: var(--p3); /* unused now that AmbientBackground paints the wash directly */
+  --color-bg-a70:      rgba(245,245,246,.7); /* == --color-bg at .7 — Modal backdrop dimmer */
 
   /* ----------------------------------------------------------
-     Light-mode ink ramp — new. WealthQ "dawn wash" palette,
-     verbatim from DESIGN_SPEC.md §2.1/§2.2, mirrors static/theme.css.
-     Used only by content painted directly on <AmbientBackground>'s
-     wash (bare page chrome: headings, row text, field labels); any
-     element with its own explicit fill (auth Card, .cc, tier-gradient
-     surfaces) keeps the dark tokens above unchanged.
+     --color-page-* — thin aliases onto the primitives above, kept so
+     components wired up before this pass (CardsPage.css, Navbar.css,
+     Input.css, Badge.css) don't need re-touching. New code should
+     reference --ink1/--p1/etc. directly rather than adding to this list.
      ---------------------------------------------------------- */
-  --color-page-1: #F5F5F6; --color-page-2: #ECEDEF; --color-page-3: #DCDEE3; --color-page-4: #C2C5CC;
-  --color-page-ink-1: #14171C; --color-page-ink-2: #2E323A; --color-page-ink-3: #6B7080;
-  --color-page-ink-4: #9BA0AC; --color-page-ink-5: #C8CBD2;
-  --color-page-hair: rgba(15,17,24,.06); --color-page-hair-strong: rgba(15,17,24,.10);
+  --color-page-1: var(--p1); --color-page-2: var(--p2); --color-page-3: var(--p3); --color-page-4: var(--p4);
+  --color-page-ink-1: var(--ink1); --color-page-ink-2: var(--ink2); --color-page-ink-3: var(--ink3);
+  --color-page-ink-4: var(--ink4); --color-page-ink-5: var(--ink5);
+  --color-page-hair: var(--hair); --color-page-hair-strong: var(--hairStrong);
 
   /* ----------------------------------------------------------
      Success — mint. Confirmations, positive states, the
      lifetime-free tier, one of the two "selected toggle" colors.
      ---------------------------------------------------------- */
-  --color-success:       #34D399; /* == legacy --mint */
-  --color-success-on:    #0B2B20; /* new: text for a solid-success fill (not currently used, provided for completeness) */
-  --color-success-a10:   rgba(52,211,153,.1);  /* dev-otp banner bg */
-  --color-success-a12:   rgba(52,211,153,.12); /* radio-toggle checked bg */
-  --color-success-a40:   rgba(52,211,153,.4);  /* dev-otp banner / checked-radio border */
+  --color-success:       var(--sageDot); /* == legacy --mint, now Lumen's sage */
+  --color-success-on:    #ffffff; /* text for a solid-success fill (not currently used, provided for completeness) */
+  --color-success-a10:   rgba(31,138,91,.1);  /* dev-otp banner bg */
+  --color-success-a12:   rgba(31,138,91,.12); /* radio-toggle checked bg */
+  --color-success-a40:   rgba(31,138,91,.4);  /* dev-otp banner / checked-radio border */
 
   /* ----------------------------------------------------------
      Warning — NEW. Not present in the current UI; added to
@@ -127,7 +133,7 @@
   /* ----------------------------------------------------------
      Border colors
      ---------------------------------------------------------- */
-  --color-border:         #2A313D; /* == legacy --line — default hairline/border everywhere */
+  --color-border:         var(--hair); /* == legacy --line — default hairline/border everywhere */
   --color-border-focus:   var(--color-primary);
   --color-border-success: var(--color-success);
   --color-border-warning: var(--color-warning);

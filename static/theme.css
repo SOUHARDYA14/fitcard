@@ -8,22 +8,32 @@
    Previously each template redeclared these in its own inline <style>,
    which let two pages (welcome.html, cards.html) drift out of sync and
    silently lose the --rose token. All seven templates link this file
-   before their own <style> block, so declaring tokens here once is
-   enough; nothing needs to redeclare them locally anymore. */
+   (after tokens.css) before their own <style> block, so declaring tokens
+   here once is enough; nothing needs to redeclare them locally anymore.
+
+   Debt #6 fix: these are no longer standalone hex values -- every one
+   maps onto a primitive in tokens.css (the Lumen/WealthQ palette), so
+   the whole site's color identity lives in one file. --ink stays defined
+   for any lingering var(--ink) fallback reference, but nothing should
+   use it as a literal background fill anymore -- the page background is
+   .dawn-wash (a gradient, not a flat color) everywhere now. */
 :root{
   --serif:'Fraunces', Georgia, serif;
-  --ink:#0E1116; --surface:#171B22; --surface-2:#1F2530;
-  --line:#2A313D; --text:#F2F4F8; --muted:#9AA4B2;
-  --gold:#E5C07B; --mint:#34D399; --rose:#F87171;
+  --ink:var(--p1); --surface:var(--p1); --surface-2:var(--p2);
+  --line:var(--hair); --text:var(--ink1); --muted:var(--ink3);
+  --gold:var(--amberAccent); --mint:var(--sageDot); --rose:#F87171;
   --r:16px;
 
-  /* Light-mode ink ramp -- WealthQ "dawn wash" palette, verbatim from
-     DESIGN_SPEC.md §2.1/§2.2. Used only by content painted directly on
-     the wash (bare headings/body/nav); anything with its own dark fill
-     (.card, inputs, .cc, .mock-card) keeps the tokens above unchanged. */
-  --p1:#F5F5F6; --p2:#ECEDEF; --p3:#DCDEE3; --p4:#C2C5CC;
-  --ink1:#14171C; --ink2:#2E323A; --ink3:#6B7080; --ink4:#9BA0AC; --ink5:#C8CBD2;
-  --hair:rgba(15,17,24,.06); --hair-strong:rgba(15,17,24,.10);
+  /* Kept as aliases so existing --hair-strong references (hyphenated,
+     matching this file's naming convention) still resolve to tokens.css's
+     --hairStrong without a mass rename. */
+  --hair-strong:var(--hairStrong);
+
+  /* Button/chip gradient stops and on-gold text -- previously hardcoded
+     identically into all 6 non-cards templates (the literal debt #6
+     example: "hunt the strays" #211a09/#f0d090). One definition now. */
+  --gold-soft:#d9a15c; --gold-strong:var(--amberAccent);
+  --on-gold:#2b1c08; --on-gold-a35:rgba(43,28,8,.35);
 }
 
 /* ---- Dawn wash: the WealthQ signature background. Fixed, full-viewport,
@@ -65,11 +75,11 @@
 }
 .cursor-crosshair .h-line{
   top:50%; left:0; width:100%; height:1.5px; transform:translateY(-50%);
-  background:linear-gradient(to right, var(--gold,#E5C07B) 0 35%, transparent 35% 65%, var(--gold,#E5C07B) 65% 100%);
+  background:linear-gradient(to right, var(--gold,#B47A20) 0 35%, transparent 35% 65%, var(--gold,#B47A20) 65% 100%);
 }
 .cursor-crosshair .v-line{
   left:50%; top:0; width:1.5px; height:100%; transform:translateX(-50%);
-  background:linear-gradient(to bottom, var(--gold,#E5C07B) 0 35%, transparent 35% 65%, var(--gold,#E5C07B) 65% 100%);
+  background:linear-gradient(to bottom, var(--gold,#B47A20) 0 35%, transparent 35% 65%, var(--gold,#B47A20) 65% 100%);
 }
 .cursor-crosshair.hover{width:32px; height:32px}
 .cursor-crosshair.hover .h-line, .cursor-crosshair.hover .v-line{opacity:1}
@@ -96,5 +106,5 @@
 .hairline{height:1px; background:linear-gradient(90deg,var(--hair-strong,rgba(15,17,24,.10)),transparent)}
 .big-numeral{
   font-family:var(--serif); font-weight:600; font-style:italic;
-  color:var(--gold,#E5C07B); line-height:.9;
+  color:var(--gold,#B47A20); line-height:.9;
 }

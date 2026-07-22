@@ -1,0 +1,20 @@
+/* ============================================================
+   FitCard — Lumen primitives
+   Single source of truth for the WealthQ "dawn wash" palette
+   (DESIGN_SPEC.md §2.1/§2.2). Every page links this before
+   theme.css, which maps the site's existing semantic tokens
+   (--surface, --text, --gold, etc.) onto these values rather
+   than each page hardcoding the palette a second time.
+   ============================================================ */
+:root {
+  --p1:#F5F5F6; --p2:#ECEDEF; --p3:#DCDEE3; --p4:#C2C5CC;
+  --ink1:#14171C; --ink2:#2E323A; --ink3:#6B7080;
+  --ink4:#9BA0AC; --ink5:#C8CBD2;
+  --amberAccent:#B47A20; --amberInk:#5A3608;
+  --sageDot:#1F8A5B; --sageInk:#0E4A2D;
+  --hair:rgba(15,17,24,0.06); --hairStrong:rgba(15,17,24,0.10);
+  --gTint:rgba(255,255,255,0.18);
+  --gEdge:inset 0 1px 0 0 rgba(255,255,255,.6), inset 0 0 0 1px rgba(255,255,255,.14);
+  --blur:blur(14px) saturate(180%) brightness(1.04);
+  --font:'DM Sans',sans-serif; --mono:'JetBrains Mono',monospace;
+}
