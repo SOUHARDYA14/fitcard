@@ -59,7 +59,7 @@
   text-decoration: none;
   font-size: var(--text-500);
   font-weight: var(--font-weight-medium);
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-link-hover) var(--ease-standard);
 }
 .fc-navbar__links a:hover {
   color: var(--color-page-ink-1);
@@ -87,7 +87,7 @@
   text-decoration: none;
   font-weight: var(--font-weight-medium);
   white-space: nowrap;
-  transition: color var(--duration-fast) var(--ease-standard);
+  transition: color var(--duration-link-hover) var(--ease-standard);
 }
 .fc-navbar__back-link:hover {
   color: var(--color-page-ink-1);

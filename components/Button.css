@@ -43,27 +43,9 @@
 .fc-btn--primary {
   background: linear-gradient(180deg, var(--color-primary-soft), var(--color-primary-strong));
   color: var(--color-on-primary);
-  box-shadow: var(--shadow-glow-primary-rest);
 }
 .fc-btn--primary:hover {
   filter: brightness(1.06);
-}
-.fc-btn--primary.fc-btn--glow {
-  animation: fc-btn-pulse-glow var(--duration-loop-emphasis) ease-in-out infinite;
-}
-@keyframes fc-btn-pulse-glow {
-  0%,
-  100% {
-    box-shadow: var(--shadow-glow-primary-rest);
-  }
-  50% {
-    box-shadow: var(--shadow-glow-primary-pulse);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .fc-btn--primary.fc-btn--glow {
-    animation: none;
-  }
 }
 
 /* ---- secondary (outlined) ---- */

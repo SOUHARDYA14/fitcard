@@ -13,12 +13,11 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth}
   body{
-    font-family:var(--font); cursor:none;
+    font-family:var(--font);
     color:var(--ink1); min-height:100vh; line-height:1.5;
     overflow-x:hidden;
     position:relative;
   }
-  @media (pointer:coarse), (hover:none){ body{cursor:auto} }
 
   /* ---- Sparkles ---- */
   .sparkles{position:fixed; inset:0; z-index:0; pointer-events:none}
@@ -42,7 +41,7 @@
   .issue-tag{font-family:var(--mono); font-size:11px; letter-spacing:.09em; color:var(--ink3);
     text-transform:uppercase; display:none}
   .nav-links{display:flex; gap:22px}
-  .nav-links a{color:var(--ink3); text-decoration:none; font-size:14px; font-weight:500; transition:color .15s}
+  .nav-links a{color:var(--ink3); text-decoration:none; font-size:14px; font-weight:500; transition:color .18s}
   .nav-links a:hover{color:var(--ink1)}
   .masthead-rule{max-width:1160px; margin:0 auto; padding:0 32px; position:relative; z-index:1}
 
@@ -68,19 +67,12 @@
     opacity:0; animation:fadeUp .6s .15s ease forwards;
   }
   h1 em{
-    /* <em> defaults to italic in the browser UA stylesheet -- removing the
-       explicit override isn't enough, it has to be set to normal. */
+    /* <em> defaults to italic in the browser UA stylesheet -- Lumen's
+       headline has no equivalent emphasis treatment, so this is now just
+       a semantic wrapper with no visual distinction from the rest of h1. */
     font-style:normal;
     font-weight:var(--weight-display);
-    /* --amberInk anchors / --gold-soft highlight, not the plain --gold
-       accent -- #E5C07B-family gold reads at ~1.8:1 against the wash's
-       white middle, well under the 3:1 large-text floor. This pair lands ~5:1. */
-    background:linear-gradient(90deg,var(--amberInk) 0%,var(--gold-soft) 45%,var(--amberInk) 90%);
-    background-size:220% auto; background-position:0% center;
-    -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; color:var(--amberInk);
-    animation:shimmerText 4s linear infinite;
   }
-  @keyframes shimmerText{to{background-position:-220% center}}
   .sub{
     color:var(--ink3); font-size:17px; max-width:42ch;
     padding-left:18px; border-left:2px solid var(--gold);
@@ -98,19 +90,16 @@
   .btn:active{transform:scale(.98)}
   .btn-primary{
     background:linear-gradient(180deg,var(--gold-soft),var(--gold-strong)); color:var(--on-gold);
-    box-shadow:0 0 0 0 rgba(180,122,32,.5);
-    animation:pulseGlow 2.6s ease-in-out infinite;
   }
   .btn-primary:hover{filter:brightness(1.06)}
   .btn-secondary{
     background:var(--surface-2); border:1px solid var(--line); color:var(--text);
   }
   .btn-secondary:hover{border-color:var(--gold)}
-  @keyframes pulseGlow{
-    0%,100%{box-shadow:0 0 0 0 rgba(180,122,32,.35)}
-    50%{box-shadow:0 0 0 10px rgba(180,122,32,0)}
-  }
   @keyframes fadeUp{from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){
+    .eyebrow, h1, .sub, .cta-row, .stage{animation:none; opacity:1}
+  }
 
   /* ---- Floating card mockup, bleeding past the column edge ---- */
   .stage{
@@ -234,8 +223,8 @@
       <h1>Find the card<br><em>that actually fits.</em></h1>
       <p class="sub">Tell us how you spend and what you earn — we'll compare every card in the database and match you with the ones that fit, ranked by score.</p>
       <div class="cta-row">
-        <a href="/match" class="btn btn-primary magnetic">Get started →</a>
-        <a href="/cards" class="btn btn-secondary magnetic">Browse all cards</a>
+        <a href="/match" class="btn btn-primary">Get started →</a>
+        <a href="/cards" class="btn btn-secondary">Browse all cards</a>
       </div>
     </div>
 

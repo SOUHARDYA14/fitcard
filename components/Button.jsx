@@ -1,6 +1,5 @@
 import React from "react";
 import "./Button.css";
-import { useMagnetic } from "../hooks";
 import { cx } from "../lib";
 
 /**
@@ -20,10 +19,6 @@ import { cx } from "../lib";
  * @param {boolean} [loading] shows the spinner + dims the label, exactly
  *   like match.html's `button.submit-btn.loading` (the only legacy
  *   button that had a loading state)
- * @param {boolean} [glow] idle pulse-glow ring — only welcome.html's
- *   primary CTA used this (`pulseGlow` animation)
- * @param {boolean} [magnetic] pointer-follow drift, matching the
- *   `.magnetic` behavior from static/theme.js
  * @param {React.ReactNode} [icon]
  */
 export default function Button({
@@ -31,8 +26,6 @@ export default function Button({
   size = "md",
   fullWidth = false,
   loading = false,
-  glow = false,
-  magnetic = false,
   disabled = false,
   icon,
   href,
@@ -42,16 +35,11 @@ export default function Button({
   onClick,
   ...rest
 }) {
-  // usePrefersReducedMotion is checked inside useMagnetic itself (WCAG
-  // 2.3.3, Animation from Interactions) — see hooks/useMagnetic.js.
-  const { ref, onMouseMove, onMouseLeave } = useMagnetic(magnetic);
-
   const classes = cx(
     "fc-btn",
     `fc-btn--${variant}`,
     size === "compact" && "fc-btn--compact",
     fullWidth && "fc-btn--full",
-    glow && "fc-btn--glow",
     loading && "is-loading",
     className
   );
@@ -69,10 +57,7 @@ export default function Button({
     );
 
   const commonProps = {
-    ref,
     className: classes,
-    onMouseMove,
-    onMouseLeave,
     onClick,
     ...rest,
   };

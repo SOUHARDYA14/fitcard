@@ -13,12 +13,6 @@ import "./AmbientBackground.css";
  *
  * Render once, near the top of a page's tree — it's fixed-position and
  * covers the viewport regardless of where it's mounted.
- *
- * Deliberately does NOT include the custom crosshair cursor
- * (`static/theme.js`'s `.cursor-crosshair`) — that's an interaction
- * behavior, not a background/color concern, and hiding the system
- * cursor has its own accessibility tradeoffs worth deciding on
- * separately rather than bundling in here.
  */
 export default function AmbientBackground() {
   return (

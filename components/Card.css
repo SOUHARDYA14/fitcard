@@ -65,8 +65,7 @@
   background: radial-gradient(140px 140px at 88% 15%, var(--color-overlay-white-14), transparent 60%);
 }
 .fc-card--best {
-  animation: fc-card-deal-in var(--duration-slow) var(--ease-out-soft) forwards,
-    fc-card-best-glow var(--duration-loop-emphasis) ease-in-out 0.9s infinite;
+  animation: fc-card-deal-in var(--duration-slow) var(--ease-out-soft) forwards;
 }
 
 .fc-card--static {
@@ -80,8 +79,7 @@
     animation: none;
     opacity: 1;
   }
-  .fc-card--recommendation::before,
-  .fc-card--best {
+  .fc-card--recommendation::before {
     animation: none;
   }
 }
@@ -122,15 +120,5 @@
   100% {
     left: 130%;
     opacity: 0;
-  }
-}
-
-@keyframes fc-card-best-glow {
-  0%,
-  100% {
-    box-shadow: var(--shadow-sm), 0 0 0 0 var(--color-primary-a35);
-  }
-  50% {
-    box-shadow: var(--shadow-sm), 0 0 0 8px var(--color-primary-a0);
   }
 }

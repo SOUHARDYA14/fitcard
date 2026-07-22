@@ -16,7 +16,7 @@ started, but the folders below all live as siblings at the repo root.
 ```
 components/   UI components — Button, Input, Card, Badge, Modal, Navbar, Footer
 pages/        (placeholder) future page-level compositions — see pages/README.md
-hooks/        reusable stateful logic — usePrefersReducedMotion, useMagnetic, useEscapeKey, useLockBodyScroll
+hooks/        reusable stateful logic — usePrefersReducedMotion, useEscapeKey, useLockBodyScroll
 lib/          framework-agnostic utilities — currently just cx() (class-name join)
 styles/       tokens.css — the design-token source of truth
 constants/    static lookup data — tiers.js (tier gradients/colors)
@@ -65,8 +65,7 @@ neither hand-rolls its pointer/keyboard/scroll-lock logic inline anymore.
 
 | Hook | Used by | Purpose |
 |---|---|---|
-| `usePrefersReducedMotion` | `useMagnetic` | live-updating OS reduced-motion preference |
-| `useMagnetic` | `Button` (`magnetic` prop) | pointer-follow drift, matching legacy `.magnetic` from `static/theme.js`; skips itself under reduced motion |
+| `usePrefersReducedMotion` | available for any component that animates | live-updating OS reduced-motion preference |
 | `useEscapeKey` | `Modal` | Escape-to-close |
 | `useLockBodyScroll` | `Modal` | locks page scroll while open |
 

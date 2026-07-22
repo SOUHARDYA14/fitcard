@@ -41,7 +41,6 @@
   --color-primary:        var(--amberAccent); /* == legacy --gold, now Lumen's amber */
   --color-primary-soft:   #8f5f18; /* button gradient stop -- darker than --amberAccent now */
   --color-primary-strong: var(--amberAccent); /* button gradient, other stop */
-  --color-primary-shine:  #f0d9b8; /* shimmer highlight in hero <em> gradient */
   --color-on-primary:     #ffffff; /* text/icons placed on a solid primary fill */
 
   /* brand-mark chip gradient — matches the button gradient's darker stop */
@@ -288,12 +287,10 @@
   --shadow-lg: 0 30px 70px rgba(0,0,0,.4);    /* auth .card */
   --shadow-xl: 0 30px 70px rgba(0,0,0,.5);    /* .mock-card */
 
-  /* Semantic glow shadows — pulseGlow (welcome CTA) and bestGlow
-     (best-match card) were near-duplicates in the audit; unified
-     into one glow pair here, reused by both. */
-  --shadow-glow-primary-rest:  0 0 0 0 var(--color-primary-a35);
-  --shadow-glow-primary-pulse: 0 0 0 10px var(--color-primary-a0);
-  --shadow-glow-primary-sm:    0 0 6px 1px var(--color-primary-a80); /* sparkle */
+  /* pulseGlow (welcome CTA) / bestGlow (best-match card) and their unified
+     --shadow-glow-primary-rest/-pulse pair are gone -- Lumen has no idle
+     pulsing glow, and the two effects were deleted together (Step 4). */
+  --shadow-glow-primary-sm: 0 0 6px 1px var(--color-primary-a80); /* sparkle */
 
   /* ----------------------------------------------------------
      Typography scale
@@ -393,9 +390,10 @@
      under the prefers-reduced-motion override further down. Those
      get their own tokens and their own explicit disable rule.
      ---------------------------------------------------------- */
-  --duration-fast:   150ms; /* hover/focus feedback: filter, opacity, color, border-color, box-shadow, transform */
+  --duration-fast:   150ms; /* hover/focus feedback: filter, opacity, border-color, box-shadow, transform */
   --duration-medium: 300ms; /* Modal backdrop dim-in */
   --duration-slow:   600ms; /* one-shot entrances: Card fade-up/deal-in, Navbar fade-up, Modal panel-in */
+  --duration-link-hover: 180ms; /* Lumen §5's link-hover timing -- distinct from --duration-fast, which covers everything else */
 
   /* Bespoke — open-ended/looping decorative animations. Not part of
      the Fast/Medium/Slow scale (see note above); each fully disabled
@@ -403,14 +401,16 @@
      collapsed (an infinite-loop animation at ~0ms duration flickers
      rather than stopping, which is the opposite of what a
      reduced-motion user asked for). */
-  --duration-loop-emphasis: 2.6s; /* Button idle pulse-glow, Card best-match glow — same "breathing" effect, one token */
+  --duration-loop-emphasis: 2.4s; /* was 2.6s for the now-deleted Button idle pulse-glow / Card best-match glow (Step 4);
+                                      repurposed for Lumen §5's status-dot pulse -- no live status-dot element yet,
+                                      reserved so a future one doesn't reinvent this token */
   --duration-loop-spin:     0.7s; /* Button loading-spinner rotation */
   --duration-shine:         1s;   /* Card one-shot diagonal shine sweep */
 
   --ease-standard: ease;
   --ease-linear:   linear;
   --ease-out-soft: cubic-bezier(.16,1,.3,1);  /* fadeUp, dealIn */
-  --ease-out-snap: cubic-bezier(.22,1,.36,1); /* magnetic buttons, card hover/tilt */
+  --ease-out-snap: cubic-bezier(.22,1,.36,1); /* card hover/tilt */
 }
 
 /* ----------------------------------------------------------

@@ -9,9 +9,10 @@ function getInitial() {
 
 /**
  * Tracks the user's OS-level reduced-motion preference live (updates if
- * they change the setting without reloading, not just on mount).
- * Extracted from the inline `window.matchMedia(...)` check that used to
- * live directly in Button.jsx's magnetic-drift handler.
+ * they change the setting without reloading, not just on mount). Not
+ * currently wired into any component -- kept as a ready-to-use utility
+ * for whichever future animation needs it (Lumen requires every new
+ * animation to have a reduced-motion branch).
  */
 export default function usePrefersReducedMotion() {
   const [reduced, setReduced] = useState(getInitial);
