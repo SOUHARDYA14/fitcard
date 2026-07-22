@@ -30,6 +30,21 @@ def _auth_key():
     return key
 
 
+def _post(url, params):
+    """Wraps requests.post + .json() so network failures (timeout, DNS,
+    connection reset) and non-JSON responses (e.g. a proxy's HTML error page)
+    surface as Msg91Error instead of propagating as an unhandled
+    ConnectionError/JSONDecodeError -- callers only catch Msg91Error/
+    Msg91NotConfigured, so anything else used to 500 the whole request."""
+    try:
+        resp = requests.post(url, params=params, timeout=15)
+        return resp.json()
+    except requests.RequestException as e:
+        raise Msg91Error(f"MSG91 request failed: {e}") from e
+    except ValueError as e:  # includes json.JSONDecodeError
+        raise Msg91Error(f"MSG91 returned a non-JSON response: {e}") from e
+
+
 def send_otp(*, phone=None, email=None):
     """Send an OTP to a phone number (SMS) or email address. Exactly one of
     phone/email must be given. Phone numbers must be in `<countrycode><number>`
@@ -49,8 +64,7 @@ def send_otp(*, phone=None, email=None):
             raise Msg91NotConfigured("MSG91_EMAIL_TEMPLATE_ID is not set")
         params.update(template_id=template_id, email=email)
 
-    resp = requests.post(f"{BASE_URL}/otp", params=params, timeout=15)
-    body = resp.json()
+    body = _post(f"{BASE_URL}/otp", params)
     if body.get("type") != "success":
         raise Msg91Error(body.get("message", "MSG91 send OTP failed"))
 
@@ -62,8 +76,7 @@ def verify_otp(otp, *, phone=None, email=None):
     params = {"authkey": _auth_key(), "otp": otp}
     params["mobile"] = phone if phone else email
 
-    resp = requests.post(f"{BASE_URL}/otp/verify", params=params, timeout=15)
-    body = resp.json()
+    body = _post(f"{BASE_URL}/otp/verify", params)
     return body.get("type") == "success"
 
 
@@ -74,7 +87,6 @@ def resend_otp(*, phone=None, email=None, via="text"):
     params = {"authkey": _auth_key(), "retrytype": via}
     params["mobile"] = phone if phone else email
 
-    resp = requests.post(f"{BASE_URL}/otp/retry", params=params, timeout=15)
-    body = resp.json()
+    body = _post(f"{BASE_URL}/otp/retry", params)
     if body.get("type") != "success":
         raise Msg91Error(body.get("message", "MSG91 resend OTP failed"))

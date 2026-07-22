@@ -37,6 +37,31 @@ class TooManyAttempts(Exception):
     pass
 
 
+class FirestoreOtpError(RuntimeError):
+    """Wraps unexpected Firestore/network failures (timeouts, transient
+    outages, credential issues) so they don't propagate as a raw exception
+    type the caller isn't watching for -- app.py's _SEND_ERRORS/except
+    clauses only catch this and the three challenge-state errors above."""
+    pass
+
+
+def _guard(fn):
+    """Every public function in this module either raises one of the four
+    exception classes above deliberately, or should raise FirestoreOtpError
+    for anything unexpected -- never a bare firebase_admin/network exception
+    the caller has no reason to know about."""
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except (ChallengeNotFound, ChallengeExpired, TooManyAttempts):
+            raise
+        except Exception as e:
+            raise FirestoreOtpError(f"Firestore OTP operation failed: {e}") from e
+    wrapper.__name__ = fn.__name__
+    wrapper.__doc__ = fn.__doc__
+    return wrapper
+
+
 def _client():
     global _app, _db
     if _db is not None:
@@ -69,6 +94,7 @@ def _generate_code():
     return f"{random.randint(0, 999999):06d}"
 
 
+@_guard
 def create_challenge(email, app_name="creditcard"):
     """Create a new pending challenge and return (challenge_id, code). The
     caller is responsible for emailing `code` to the user -- it is never
@@ -89,6 +115,7 @@ def create_challenge(email, app_name="creditcard"):
     return challenge_id, code
 
 
+@_guard
 def regenerate_code(challenge_id):
     """For a resend: issue a fresh code against the same challenge, resetting expiry."""
     db = _client()
@@ -105,6 +132,7 @@ def regenerate_code(challenge_id):
     return code
 
 
+@_guard
 def get_email(challenge_id):
     db = _client()
     doc = db.collection(COLLECTION).document(challenge_id).get()
@@ -113,33 +141,46 @@ def get_email(challenge_id):
     return doc.to_dict()["email"]
 
 
+@_guard
 def verify_challenge(challenge_id, code):
     """Returns True/False for a correct/incorrect code. Raises
     ChallengeNotFound/ChallengeExpired/TooManyAttempts for those cases so the
     caller can show a more specific message than a flat "wrong code"."""
     db = _client()
     ref = db.collection(COLLECTION).document(challenge_id)
-    doc = ref.get()
-    if not doc.exists:
-        raise ChallengeNotFound(challenge_id)
 
-    data = doc.to_dict()
-    if data["attempts"] >= MAX_ATTEMPTS:
-        raise TooManyAttempts(challenge_id)
+    # A plain get()-then-later-update() on `attempts` is a check-then-act
+    # race: parallel verify calls for the same challenge_id can each read the
+    # same pre-increment count before either write lands, letting an
+    # attacker land more guesses than MAX_ATTEMPTS. @firestore.transactional
+    # makes the read-check-write atomic (Firestore retries the transaction on
+    # contention rather than letting two reads interleave).
+    @firestore.transactional
+    def _verify(transaction):
+        doc = ref.get(transaction=transaction)
+        if not doc.exists:
+            raise ChallengeNotFound(challenge_id)
 
-    expires_at = data["expiresAt"]
-    if expires_at.tzinfo is None:
-        expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if datetime.now(timezone.utc) > expires_at:
-        raise ChallengeExpired(challenge_id)
+        data = doc.to_dict()
+        if data["attempts"] >= MAX_ATTEMPTS:
+            raise TooManyAttempts(challenge_id)
 
-    if _hash_code(code) != data["codeHash"]:
-        ref.update({"attempts": firestore.Increment(1)})
-        return False
+        expires_at = data["expiresAt"]
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > expires_at:
+            raise ChallengeExpired(challenge_id)
 
-    ref.update({"verified": True})
-    return True
+        if _hash_code(code) != data["codeHash"]:
+            transaction.update(ref, {"attempts": data["attempts"] + 1})
+            return False
+
+        transaction.update(ref, {"verified": True})
+        return True
+
+    return _verify(db.transaction())
 
 
+@_guard
 def delete_challenge(challenge_id):
     _client().collection(COLLECTION).document(challenge_id).delete()

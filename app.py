@@ -136,13 +136,20 @@ def signup():
         elif phone and User.get_by_phone(phone):
             error = "An account with that phone number already exists."
         else:
-            user = User.create(email=email, password=password, name=name or None, phone=phone)
             try:
-                _start_otp_challenge(user, "email")
-            except _SEND_ERRORS:
-                error = "Couldn't send a verification code right now. Try again shortly."
+                user = User.create(email=email, password=password, name=name or None, phone=phone)
+            except sqlite3.IntegrityError:
+                # Narrow window between the get_by_email/get_by_phone checks
+                # above and this insert -- a concurrent signup for the same
+                # email/phone can slip through and hit the UNIQUE constraint.
+                error = "An account with that email or phone number already exists."
             else:
-                return redirect(url_for("login_verify"))
+                try:
+                    _start_otp_challenge(user, "email")
+                except _SEND_ERRORS:
+                    error = "Couldn't send a verification code right now. Try again shortly."
+                else:
+                    return redirect(url_for("login_verify"))
 
     return render_template("signup.html", error=error)
 
@@ -211,6 +218,8 @@ def login_verify():
         except firebase_otp.ChallengeNotFound:
             _clear_otp_challenge()
             return redirect(url_for("login"))
+        except (firebase_otp.FirestoreOtpError, msg91.Msg91Error, msg91.Msg91NotConfigured):
+            error = "Couldn't verify your code right now. Try again shortly."
         else:
             if verified:
                 user = User.get(session["pending_uid"])
@@ -280,6 +289,14 @@ def auth_google_callback():
         if user:
             user.link_google(sub, name)
     if not user:
+        # users.email is UNIQUE NOT NULL, so an account can't be created
+        # without one -- some Google accounts don't return an email claim
+        # (e.g. scope not granted, or an unverified/managed account).
+        if not email:
+            return render_template(
+                "login.html",
+                error="Your Google account didn't share an email address, so we can't create an account for it. Try signing up with email/password instead.",
+            )
         user = User.create(email=email, name=name, google_sub=sub)
 
     login_user(user)
@@ -296,20 +313,24 @@ def welcome():
 @app.route("/match")
 def params_form():
     conn = get_db_connection()
-    banks = conn.execute("SELECT id, bank_name FROM banks ORDER BY bank_name").fetchall()
-    conn.close()
+    try:
+        banks = conn.execute("SELECT id, bank_name FROM banks ORDER BY bank_name").fetchall()
+    finally:
+        conn.close()
     return render_template("match.html", banks=banks)
 
 
 @app.route("/cards")
 def all_cards():
     conn = get_db_connection()
-    rows = conn.execute("""
-        SELECT c.card_name, b.bank_name, c.joining_fee, c.return_percentage, c.best_suited_for
-        FROM credit_cards c JOIN banks b ON b.id = c.bank_id
-        ORDER BY b.bank_name, c.card_name
-    """).fetchall()
-    conn.close()
+    try:
+        rows = conn.execute("""
+            SELECT c.card_name, b.bank_name, c.joining_fee, c.return_percentage, c.best_suited_for
+            FROM credit_cards c JOIN banks b ON b.id = c.bank_id
+            ORDER BY b.bank_name, c.card_name
+        """).fetchall()
+    finally:
+        conn.close()
 
     cards = []
     for r in rows:
@@ -327,17 +348,30 @@ def all_cards():
 
 @app.route("/recommend", methods=["POST"])
 def recommend():
-    data = request.get_json(force=True) or {}
-    conn = get_db_connection()
-    result = scoring.recommend(conn, data)
+    # force=True parses the body as JSON regardless of Content-Type, which
+    # means a cross-site request using a "simple" content type (e.g.
+    # text/plain) skips the browser's CORS preflight entirely and still gets
+    # parsed here -- combined with cookies being sent automatically, that let
+    # an attacker's page silently write into a logged-in victim's
+    # saved_recommendations. Requiring a real application/json body forces
+    # the browser to preflight cross-origin requests, which this app never
+    # opts into via CORS headers, so the browser blocks them itself.
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({"error": "Request body must be valid JSON with Content-Type: application/json."}), 400
 
-    if current_user.is_authenticated:
-        conn.execute(
-            "INSERT INTO saved_recommendations (user_id, inputs_json, results_json) VALUES (?, ?, ?)",
-            (current_user.id, json.dumps(data), json.dumps(result["results"])),
-        )
-        conn.commit()
-    conn.close()
+    conn = get_db_connection()
+    try:
+        result = scoring.recommend(conn, data)
+
+        if current_user.is_authenticated:
+            conn.execute(
+                "INSERT INTO saved_recommendations (user_id, inputs_json, results_json) VALUES (?, ?, ?)",
+                (current_user.id, json.dumps(data), json.dumps(result["results"])),
+            )
+            conn.commit()
+    finally:
+        conn.close()
 
     return jsonify(result)
 

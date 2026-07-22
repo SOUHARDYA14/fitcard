@@ -180,8 +180,13 @@ def _composite(parts):
 
 
 def recommend(conn, params):
-    spend = {k: float(params.get("spend", {}).get(k) or 0) for k in CATEGORY_KEYWORDS}
-    spend["other"] = float(params.get("spend", {}).get("other") or 0)
+    # dict.get(key, default) only substitutes the default when the key is
+    # absent, not when it's present with value None -- a body like
+    # {"spend": null} would otherwise return None here and crash the next
+    # .get() call. `or {}` covers both "absent" and "present but falsy".
+    raw_spend = params.get("spend") or {}
+    spend = {k: float(raw_spend.get(k) or 0) for k in CATEGORY_KEYWORDS}
+    spend["other"] = float(raw_spend.get("other") or 0)
     total_monthly_spend = sum(spend.values())
     total_annual_spend = total_monthly_spend * 12
 

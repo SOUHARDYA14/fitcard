@@ -26,20 +26,26 @@ def send_otp_email(to_email, code):
         raise ResendNotConfigured("RESEND_API_KEY is not set")
     from_email = os.environ.get("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 
-    resp = requests.post(
-        RESEND_API_URL,
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        json={
-            "from": f"FitCard <{from_email}>",
-            "to": [to_email],
-            "subject": f"Your FitCard verification code: {code}",
-            "html": (
-                f"<p>Your FitCard verification code is:</p>"
-                f"<p style='font-size:28px;font-weight:700;letter-spacing:4px'>{code}</p>"
-                f"<p>This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>"
-            ),
-        },
-        timeout=15,
-    )
+    try:
+        resp = requests.post(
+            RESEND_API_URL,
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            json={
+                "from": f"FitCard <{from_email}>",
+                "to": [to_email],
+                # Code intentionally left out of the subject line -- subjects
+                # show up in notification previews, mail server logs, and
+                # inbox lists in plaintext far more readily than a body does.
+                "subject": "Your FitCard verification code",
+                "html": (
+                    f"<p>Your FitCard verification code is:</p>"
+                    f"<p style='font-size:28px;font-weight:700;letter-spacing:4px'>{code}</p>"
+                    f"<p>This code expires in 10 minutes. If you didn't request this, you can ignore this email.</p>"
+                ),
+            },
+            timeout=15,
+        )
+    except requests.RequestException as e:
+        raise ResendError(f"Resend request failed: {e}") from e
     if not resp.ok:
         raise ResendError(f"Resend send failed: {resp.status_code} {resp.text}")
