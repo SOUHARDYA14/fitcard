@@ -11,10 +11,11 @@
    default/compact/otp sit inside a dark surface of their own and restore
    the original dark-panel tokens further down. */
 .fc-field__label {
+  font-family: var(--font-label);
   font-size: var(--text-small);
   color: var(--color-page-ink-3);
   font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wide);
+  letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
 }
 .fc-field__hint {

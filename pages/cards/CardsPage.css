@@ -41,8 +41,7 @@ body {
 
 .cardspage-h1 {
   font-family: var(--font-display);
-  font-weight: var(--font-weight-medium);
-  font-style: italic;
+  font-weight: var(--font-weight-display);
   font-size: var(--text-display-sm);
   line-height: 1.06;
   margin: 0 0 var(--space-4);
@@ -106,8 +105,11 @@ body {
   min-width: 220px;
 }
 .cardspage-row-index {
-  font-family: var(--font-display);
-  font-style: italic;
+  /* Numerals are mono per the Lumen mapping, not display -- this was
+     miscategorized under --font-display (Fraunces italic) before. */
+  font-family: var(--font-label);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
   /* var(--color-primary) gold reads at ~1.75:1 on the wash (fine on the
      old dark bg) -- ink keeps the index legible without losing gold
      entirely from the row (it stays on hover via border-color above). */
@@ -122,8 +124,7 @@ body {
 }
 .cardspage-row-name {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-display);
   font-size: var(--text-800);
 }
 .cardspage-row-bank {
@@ -149,6 +150,7 @@ body {
   min-width: 70px;
 }
 .cardspage-stat-label {
+  font-family: var(--font-label);
   font-size: var(--text-100);
   text-transform: uppercase;
   letter-spacing: var(--tracking-wider);

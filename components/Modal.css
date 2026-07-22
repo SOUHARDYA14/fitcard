@@ -39,8 +39,7 @@
 }
 .fc-modal__title {
   font-family: var(--font-display);
-  font-style: italic;
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-display);
   font-size: var(--text-heading-m);
   margin: 0;
 }

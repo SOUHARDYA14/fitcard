@@ -282,9 +282,14 @@
   /* ----------------------------------------------------------
      Typography scale
      ---------------------------------------------------------- */
-  --font-display: 'Fraunces', Georgia, serif;          /* == legacy --serif — headings, brand mark, numerals */
-  --font-body:    'Inter', system-ui, sans-serif;       /* body copy */
-  --font-label:   'Space Grotesk', sans-serif;          /* buttons, data, eyebrows, uppercase labels */
+  /* Lumen typography swap: Inter moves from body to headline duty, DM Sans
+     takes over body/nav/forms, and JetBrains Mono replaces Space Grotesk
+     for labels/eyebrows/buttons/numerals. Governing rule -- mono is always
+     uppercase with open tracking (.08–.18em); sans is never uppercase. */
+  --font-display: 'Inter', sans-serif;                  /* == legacy --serif — headings, card names (NOT numerals -- those are --font-label) */
+  --font-body:    'DM Sans', system-ui, sans-serif;      /* body copy, nav, form values */
+  --font-label:   'JetBrains Mono', monospace;           /* buttons, eyebrows, uppercase labels, numerals */
+  --font-weight-display: 620;                            /* Inter headline weight, per Lumen's spec */
 
   --font-weight-regular:  400;
   --font-weight-medium:   500;
@@ -342,16 +347,19 @@
   --leading-relaxed: 1.6;  /* field-row numeral */
 
   /* Letter-spacing — heavily used for the eyebrow/uppercase-label
-     idiom throughout the site. */
-  --tracking-tight:  -.01em; /* headings, brand mark */
+     idiom throughout the site. Mono-text tracking values below are all
+     clamped into .08–.18em per the governing rule (several were wider
+     under the old Space Grotesk treatment; e.g. the hero eyebrow's .28em
+     comes down to .10em, matching the Lumen spec's own example). */
+  --tracking-tight:  -.018em; /* Inter 620 headlines, per Lumen's spec */
   --tracking-normal: 0;
-  --tracking-wide:   .04em;  /* form labels */
-  --tracking-wider:  .06em;  /* uppercase field labels, stat labels */
-  --tracking-widest: .08em;  /* mock-name */
-  --tracking-eyebrow:.2em;   /* stat-index, issue-tag */
-  --tracking-eyebrow-lg: .28em; /* hero eyebrow */
-  --tracking-eyebrow-xl: .32em; /* .eyebrow-vert */
-  --tracking-code:   .3em;   /* OTP input */
+  --tracking-wide:   .04em;  /* form labels (DM Sans, not mono -- stays under .08) */
+  --tracking-wider:  .10em;  /* uppercase field labels, stat labels (mono) */
+  --tracking-widest: .12em;  /* mock-name (mono) */
+  --tracking-eyebrow:.10em;  /* stat-index, issue-tag (mono) */
+  --tracking-eyebrow-lg: .10em; /* hero eyebrow (mono) */
+  --tracking-eyebrow-xl: .12em; /* .eyebrow-vert (mono) */
+  --tracking-code:   .18em;  /* OTP input (mono, at the open end of the range) */
 
   /* ----------------------------------------------------------
      Motion durations — STANDARDIZED to 3 tiers, 2026-07-22.

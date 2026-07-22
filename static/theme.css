@@ -18,7 +18,15 @@
    use it as a literal background fill anymore -- the page background is
    .dawn-wash (a gradient, not a flat color) everywhere now. */
 :root{
-  --serif:'Fraunces', Georgia, serif;
+  /* Lumen typography swap: Inter moves from body to headline duty (kept
+     under the --serif name so existing var(--serif) references don't all
+     need renaming -- only the value changes), DM Sans takes over body/nav/
+     forms (tokens.css's --font), and JetBrains Mono replaces Space Grotesk
+     for labels/eyebrows/buttons/numerals (tokens.css's --mono). Governing
+     rule -- mono is always uppercase with open tracking (.08–.18em); sans
+     is never uppercase. */
+  --serif:'Inter', sans-serif;
+  --weight-display:620; /* Inter headline weight, per Lumen's spec */
   --ink:var(--p1); --surface:var(--p1); --surface-2:var(--p2);
   --line:var(--hair); --text:var(--ink1); --muted:var(--ink3);
   --gold:var(--amberAccent); --mint:var(--sageDot); --rose:#F87171;
@@ -100,11 +108,11 @@
 /* ---- Editorial typographic utilities ---- */
 .eyebrow-vert{
   writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg);
-  font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.32em;
+  font-family:var(--mono); font-size:11px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--ink3,#6B7080); white-space:nowrap;
 }
 .hairline{height:1px; background:linear-gradient(90deg,var(--hair-strong,rgba(15,17,24,.10)),transparent)}
 .big-numeral{
-  font-family:var(--serif); font-weight:600; font-style:italic;
+  font-family:var(--mono); font-weight:600;
   color:var(--gold,#B47A20); line-height:.9;
 }

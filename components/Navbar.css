@@ -1,11 +1,13 @@
 /* Navbar — see Navbar.jsx for which legacy selectors this replaces. */
 
 .fc-navbar__brand {
+  /* Wordmark now matches Lumen's own spec exactly (17px/600/-0.02em sans)
+     rather than keeping FitCard's italic-serif mark as a deliberate
+     exception -- decided explicitly, not a side effect of the font swap. */
   font-family: var(--font-display);
-  font-style: italic;
   font-weight: var(--font-weight-semibold);
   font-size: var(--text-900); /* 19px, matches back-link/brand-only variants */
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: -.02em;
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
