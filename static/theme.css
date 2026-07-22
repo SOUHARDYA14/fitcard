@@ -29,7 +29,7 @@
   --weight-display:620; /* Inter headline weight, per Lumen's spec */
   --ink:var(--p1); --surface:var(--p1); --surface-2:var(--p2);
   --line:var(--hair); --text:var(--ink1); --muted:var(--ink3);
-  --gold:var(--amberAccent); --mint:var(--sageDot); --rose:#F87171;
+  --gold:var(--amberAccent); --mint:var(--sageDot);
   --r:16px;
 
   /* Kept as aliases so existing --hair-strong references (hyphenated,
@@ -37,11 +37,37 @@
      --hairStrong without a mass rename. */
   --hair-strong:var(--hairStrong);
 
-  /* Button/chip gradient stops and on-gold text -- previously hardcoded
-     identically into all 6 non-cards templates (the literal debt #6
-     example: "hunt the strays" #211a09/#f0d090). One definition now. */
-  --gold-soft:#d9a15c; --gold-strong:var(--amberAccent);
-  --on-gold:#2b1c08; --on-gold-a35:rgba(43,28,8,.35);
+  /* ----------------------------------------------------------
+     Four things Lumen has no value for -- decided here rather than
+     left to get hardcoded per-usage a second time (that's debt #6
+     again, just for a different set of values).
+
+     --gold-strong (button text): white. Independently verified white
+     on --amberAccent (#B47A20) is ~3.66:1, not the ~4.6:1 quoted when
+     this was decided -- that figure matches dark text on the same
+     background instead. Flagging the discrepancy; proceeding with white
+     per the explicit call, landing a comfortable 5.5:1 against the new
+     darker --gold-soft below and a tight ~3.66:1 at the lightest point
+     of the button gradient (pure --amberAccent, borderline for 15px
+     semibold/mono-uppercase button labels).
+
+     --gold-soft (button/chip gradient stop, named for the historical
+     dark-mode "hover" role): darker than --amberAccent now, not
+     lighter -- on a light ground, the emphasis direction inverts.
+
+     --rose (critical/error): #F87171 is a dark-mode red, ~2.5:1 on the
+     wash. #b91c1c clears AA at ~5.9:1.
+
+     --warning: not previously defined here (unused in this app's UI
+     today, but tokenized for parity with the React library and the
+     insurance app, which does use it live). #F0B429 (Lumen amber
+     family) would clash with the brand accent -- picked a distinct
+     burnt-orange hue instead, ~4.75:1 on the wash.
+     ---------------------------------------------------------- */
+  --gold-soft:#8f5f18; --gold-strong:var(--amberAccent);
+  --on-gold:#ffffff; --on-gold-a35:rgba(255,255,255,.35);
+  --rose:#b91c1c;
+  --warn:#C2410C;
 }
 
 /* ---- Dawn wash: the WealthQ signature background. Fixed, full-viewport,

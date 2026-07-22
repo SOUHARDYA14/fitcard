@@ -31,15 +31,21 @@
      Primary colors — amber. The site's one CTA/accent color:
      buttons, focus rings, highlights, the luxury tier.
      ---------------------------------------------------------- */
+  /* Lumen has no value for on-primary/hover -- decided here (see
+     static/theme.css for the full writeup): white text (independently
+     verified ~3.66:1 on pure --amberAccent, not the ~4.6:1 the decision
+     was quoted at -- flagging that discrepancy, proceeding with white
+     per the explicit call), and a *darker* hover/gradient-stop amber,
+     not a lighter one -- on a light ground the emphasis direction
+     inverts from the old dark-mode assumption. */
   --color-primary:        var(--amberAccent); /* == legacy --gold, now Lumen's amber */
-  --color-primary-soft:   #d9a15c; /* button gradient, top stop -- lightened from --amberAccent */
-  --color-primary-strong: var(--amberAccent); /* button gradient, bottom stop */
+  --color-primary-soft:   #8f5f18; /* button gradient stop -- darker than --amberAccent now */
+  --color-primary-strong: var(--amberAccent); /* button gradient, other stop */
   --color-primary-shine:  #f0d9b8; /* shimmer highlight in hero <em> gradient */
-  --color-on-primary:     #2b1c08; /* text/icons placed on a solid primary fill */
+  --color-on-primary:     #ffffff; /* text/icons placed on a solid primary fill */
 
-  /* brand-mark chip gradient — a lighter/brassier amber than the
-     button gradient above, used by components/Navbar.css's logo chip */
-  --color-primary-chip-start: #d9a15c;
+  /* brand-mark chip gradient — matches the button gradient's darker stop */
+  --color-primary-chip-start: #8f5f18;
   --color-primary-chip-end:   var(--amberAccent);
 
   --color-primary-a0:  rgba(180,122,32,0);   /* glow-pulse end state (was inlined in the keyframe) */
@@ -51,9 +57,9 @@
   --color-primary-a50: rgba(180,122,32,.5);  /* CTA idle shadow base */
   --color-primary-a80: rgba(180,122,32,.8);  /* sparkle glow */
 
-  /* matches --color-on-primary (#2b1c08) at .35 alpha — the
+  /* matches --color-on-primary (white) at .35 alpha — the
      spinner ring drawn on top of an amber button */
-  --color-on-primary-a35: rgba(43,28,8,.35);
+  --color-on-primary-a35: rgba(255,255,255,.35);
 
   /* ----------------------------------------------------------
      Secondary colors — indigo/violet. The second recurring accent:
@@ -71,10 +77,14 @@
      Text colors
      ---------------------------------------------------------- */
   --color-text:             var(--ink1); /* == legacy --text — primary copy */
-  --color-text-muted:       var(--ink3); /* == legacy --muted — labels, captions, secondary copy */
-  --color-text-subtle:      var(--ink4); /* cards.html .row-suited */
+  --color-text-muted:       var(--ink3); /* == legacy --muted — labels, captions, secondary copy.
+                                             NOT --ink4: the spec explicitly warns --ink4 fails
+                                             AA (~2.6:1) and is legal-line-only. */
+  --color-text-subtle:      var(--ink3); /* cards.html .row-suited -- real content, was --ink4 (fails AA) */
   --color-text-faint:       var(--ink5); /* footer disclaimer text */
-  --color-text-placeholder: var(--ink4); /* match.html input::placeholder */
+  --color-text-placeholder: var(--ink4); /* match.html input::placeholder -- kept at --ink4;
+                                             placeholder hint text is the one case closest to
+                                             the spec's own "legal-line-only" allowance */
   --color-text-on-primary:  var(--color-on-primary);
   --color-text-on-secondary:var(--color-on-secondary);
 
@@ -117,18 +127,24 @@
      to the success and danger ramps below so it drops in
      consistently (banner bg/border, same as .error / .dev-otp).
      ---------------------------------------------------------- */
-  --color-warning:      #FBBF24;
-  --color-warning-on:   #2B1B05; /* text for a solid-warning fill */
-  --color-warning-a10:  rgba(251,191,36,.1);  /* banner bg, mirrors --color-danger-a10 */
-  --color-warning-a40:  rgba(251,191,36,.4);  /* banner border, mirrors --color-danger-a40 */
+  /* Lumen has no warning value, and its amber is already claimed by the
+     brand accent -- picked a distinct burnt-orange hue instead of
+     reusing anything gold/amber-adjacent. ~4.75:1 on the wash. */
+  --color-warning:      #C2410C;
+  --color-warning-on:   #ffffff; /* text for a solid-warning fill -- ~5.2:1 */
+  --color-warning-a10:  rgba(194,65,12,.1);  /* banner bg, mirrors --color-danger-a10 */
+  --color-warning-a40:  rgba(194,65,12,.4);  /* banner border, mirrors --color-danger-a40 */
 
   /* ----------------------------------------------------------
      Danger — rose. Error banners, validation messages.
      ---------------------------------------------------------- */
-  --color-danger:      #F87171; /* == legacy --rose */
-  --color-danger-on:   #450a0a; /* new: text for a solid-danger fill (not currently used, provided for completeness) */
-  --color-danger-a10:  rgba(248,113,113,.1); /* .error banner bg */
-  --color-danger-a40:  rgba(248,113,113,.4); /* .error banner / .state.error border */
+  /* #F87171 is a dark-mode red, ~2.5:1 on the wash (fine on the old dark
+     bg, fails AA here). #b91c1c clears AA at ~5.9:1 -- matches
+     static/theme.css's --rose exactly. */
+  --color-danger:      #b91c1c; /* == legacy --rose */
+  --color-danger-on:   #ffffff; /* text for a solid-danger fill -- ~6.5:1 */
+  --color-danger-a10:  rgba(185,28,28,.1); /* .error banner bg */
+  --color-danger-a40:  rgba(185,28,28,.4); /* .error banner / .state.error border */
 
   /* ----------------------------------------------------------
      Border colors

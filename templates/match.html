@@ -237,10 +237,10 @@
     text-align:center; color:var(--ink3); font-size:14px; margin-top:8px;
     animation:fadeUp .35s ease;
   }
-  /* bare var(--rose) text reads at ~2.1:1 on the wash (fine on the old dark
-     bg) -- darker red keeps the error the same being an alert without
-     failing contrast. */
-  .state.error{border-color:rgba(248,113,113,.4); color:#b91c1c}
+  /* --rose is now #b91c1c (~5.9:1 on the wash) rather than the old
+     #F87171 dark-mode red (~2.5:1) -- this used to hardcode the fix
+     locally before the token itself was corrected; now it just uses it. */
+  .state.error{border-color:rgba(185,28,28,.35); color:var(--rose)}
   .state strong{display:block; color:var(--ink1); font-family:var(--serif); font-weight:var(--weight-display); font-size:17px; margin-bottom:6px}
 
   footer{max-width:820px; margin:56px auto 0; padding-top:22px; border-top:1px solid var(--hair-strong);
