@@ -4,8 +4,18 @@
    and typographic utilities used across welcome / match / cards.
    ============================================================ */
 
+/* Canonical token set -- the single source of truth for every page.
+   Previously each template redeclared these in its own inline <style>,
+   which let two pages (welcome.html, cards.html) drift out of sync and
+   silently lose the --rose token. All seven templates link this file
+   before their own <style> block, so declaring tokens here once is
+   enough; nothing needs to redeclare them locally anymore. */
 :root{
   --serif:'Fraunces', Georgia, serif;
+  --ink:#0E1116; --surface:#171B22; --surface-2:#1F2530;
+  --line:#2A313D; --text:#F2F4F8; --muted:#9AA4B2;
+  --gold:#E5C07B; --mint:#34D399; --rose:#F87171;
+  --r:16px;
 }
 
 /* ---- Grain overlay: adds tactile, print-like texture ---- */
