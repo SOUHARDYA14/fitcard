@@ -1,0 +1,11 @@
+{
+  "pages/cards/main.jsx": {
+    "file": "assets/cards-CfxOHjfl.js",
+    "name": "cards",
+    "src": "pages/cards/main.jsx",
+    "isEntry": true,
+    "css": [
+      "assets/cards-DAgHmQ9r.css"
+    ]
+  }
+}

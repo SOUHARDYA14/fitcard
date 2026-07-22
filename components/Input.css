@@ -1,0 +1,118 @@
+/* Input — see Input.jsx for which legacy selectors this replaces. */
+
+.fc-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-9);
+}
+/* Base label/hint/text colors target the underline variant below (the only
+   one rendered on a bare page background today -- cards.html's filter bar).
+   default/compact/otp sit inside a dark surface of their own and restore
+   the original dark-panel tokens further down. */
+.fc-field__label {
+  font-size: var(--text-small);
+  color: var(--color-page-ink-3);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+.fc-field__hint {
+  font-size: var(--text-small);
+  color: var(--color-page-ink-3);
+  margin-top: calc(var(--space-5) * -1);
+  margin-bottom: var(--space-9);
+}
+.fc-field__hint--error {
+  color: var(--color-danger);
+}
+
+.fc-input {
+  width: 100%;
+  color: var(--color-page-ink-1);
+  font-size: var(--text-body);
+  transition: border-color var(--duration-fast) var(--ease-standard);
+}
+.fc-input:focus {
+  outline: none;
+}
+
+/* default/compact/otp all render inside their own dark pill/panel (the auth
+   Card, a match.html field row) -- not yet wired into the live app, but
+   when they are they need the original dark-panel tokens restored, since
+   the base .fc-input/.fc-field__label above now default to the light-ink
+   tokens the live underline variant (bare on the wash) needs. */
+
+/* ---- default: auth-page input (login / login_phone / signup / verify_otp) ---- */
+.fc-input--default {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  padding: var(--space-5-5) var(--space-6);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+.fc-input--default:focus {
+  border-color: var(--color-primary);
+}
+
+/* ---- compact: match.html field-row input/select ---- */
+.fc-input--compact {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  padding: var(--space-4-5) var(--space-5);
+  font-family: var(--font-label);
+  color: var(--color-text);
+}
+.fc-input--compact:focus {
+  border-color: var(--color-primary);
+}
+.fc-input--compact::placeholder {
+  color: var(--color-text-placeholder);
+  font-family: var(--font-body);
+  font-size: var(--text-caption);
+}
+select.fc-input--compact {
+  appearance: none;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-text-muted) 50%),
+    linear-gradient(135deg, var(--color-text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 14px) 50%, calc(100% - 10px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+.fc-field:has(.fc-input--default) .fc-field__label,
+.fc-field:has(.fc-input--compact) .fc-field__label,
+.fc-field:has(.fc-input--otp) .fc-field__label {
+  color: var(--color-text-muted);
+}
+
+/* ---- underline: cards.html filter bar ---- */
+.fc-input--underline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-page-hair-strong);
+  border-radius: var(--radius-none);
+  padding: var(--space-3) var(--space-1);
+  font-family: var(--font-label);
+}
+.fc-input--underline:focus {
+  border-bottom-color: var(--color-primary);
+}
+
+/* ---- otp: verify_otp digit entry ---- */
+.fc-input--otp {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-base);
+  padding: var(--space-5-5) var(--space-6);
+  font-family: var(--font-label);
+  font-size: var(--text-1100);
+  letter-spacing: var(--tracking-code);
+  text-align: center;
+  color: var(--color-text);
+}
+.fc-input--otp:focus {
+  border-color: var(--color-primary);
+}

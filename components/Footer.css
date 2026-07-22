@@ -1,0 +1,24 @@
+/* Footer — see Footer.jsx for which legacy selectors this replaces. */
+
+.fc-footer {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  text-align: center;
+  color: var(--color-text-faint);
+  font-size: var(--text-small);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ---- wide: templates/welcome.html <footer> ---- */
+.fc-footer--wide {
+  max-width: var(--container-wide);
+  padding: var(--space-14) var(--space-16) var(--space-24);
+}
+
+/* ---- narrow: templates/match.html <footer> ---- */
+.fc-footer--narrow {
+  max-width: var(--container-narrow);
+  margin-top: var(--space-28); /* 56px */
+  padding-top: var(--space-11);
+}

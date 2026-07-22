@@ -1,0 +1,129 @@
+/* Button — see Button.jsx for which legacy selectors this replaces. */
+
+.fc-btn {
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-body);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-13); /* welcome .btn-primary / .btn-secondary */
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  transition: filter var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+  will-change: transform;
+}
+.fc-btn:active {
+  transform: scale(0.98);
+}
+
+/* match.html button.submit-btn used 14px 28px instead of 14px 26px */
+.fc-btn--primary,
+.fc-btn--secondary {
+  padding: var(--space-7) var(--space-14);
+}
+
+/* the 4 auth-page buttons + .btn-google used 13px 20px, full width */
+.fc-btn--compact {
+  padding: var(--space-6-5) var(--space-10);
+}
+.fc-btn--full {
+  width: 100%;
+}
+
+/* ---- primary (gold) ---- */
+.fc-btn--primary {
+  background: linear-gradient(180deg, var(--color-primary-soft), var(--color-primary-strong));
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-glow-primary-rest);
+}
+.fc-btn--primary:hover {
+  filter: brightness(1.06);
+}
+.fc-btn--primary.fc-btn--glow {
+  animation: fc-btn-pulse-glow var(--duration-loop-emphasis) ease-in-out infinite;
+}
+@keyframes fc-btn-pulse-glow {
+  0%,
+  100% {
+    box-shadow: var(--shadow-glow-primary-rest);
+  }
+  50% {
+    box-shadow: var(--shadow-glow-primary-pulse);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fc-btn--primary.fc-btn--glow {
+    animation: none;
+  }
+}
+
+/* ---- secondary (outlined) ---- */
+.fc-btn--secondary {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+.fc-btn--secondary:hover {
+  border-color: var(--color-primary);
+}
+
+/* ---- oauth (Google) ---- */
+.fc-btn--oauth {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-500);
+  padding: var(--space-5-5) var(--space-10);
+}
+.fc-btn--oauth:hover {
+  border-color: var(--color-primary);
+}
+
+/* ---- link (text button, e.g. "Resend code") ---- */
+.fc-btn--link {
+  all: unset;
+  cursor: pointer;
+  color: var(--color-primary);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+}
+.fc-btn--link:hover {
+  text-decoration: underline;
+}
+
+/* ---- disabled / loading ---- */
+.fc-btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+.fc-btn__spinner {
+  width: 15px;
+  height: 15px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-on-primary-a35);
+  border-top-color: var(--color-on-primary);
+  animation: fc-btn-spin var(--duration-loop-spin) linear infinite;
+  display: inline-block;
+}
+@keyframes fc-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.fc-btn.is-loading .fc-btn__label {
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fc-btn__spinner {
+    animation: none;
+  }
+}

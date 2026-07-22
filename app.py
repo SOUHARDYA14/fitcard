@@ -15,6 +15,7 @@ import msg91
 import resend_email
 import scoring
 from auth import User
+from vite_assets import vite_asset
 
 load_dotenv()
 
@@ -50,6 +51,12 @@ def get_db_connection():
 @app.context_processor
 def inject_globals():
     return {"google_enabled": google_enabled}
+
+
+# Lets migrated templates do {{ vite_asset('pages/cards/main.jsx') }} to pull
+# in that entry's built (or, under VITE_DEV=1, dev-server-hosted) JS/CSS --
+# see vite_assets.py and the frontend migration plan for why this exists.
+app.jinja_env.globals["vite_asset"] = vite_asset
 
 
 # ---------------------------------------------------------------- auth ----

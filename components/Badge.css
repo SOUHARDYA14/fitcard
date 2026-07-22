@@ -1,0 +1,79 @@
+/* Badge — see Badge.jsx for which legacy selectors this replaces. */
+
+.fc-badge {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- rank: match.html `.rank` ("Best match" / "#2") ---- */
+.fc-badge--rank {
+  display: inline-block;
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-200);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  padding: var(--space-2) var(--space-4-5);
+  border-radius: var(--radius-pill);
+  text-transform: uppercase;
+  margin-top: var(--space-8);
+}
+
+/* ---- category: match.html `.cat-pill` ---- */
+.fc-badge--category {
+  display: inline-block;
+  font-size: var(--text-200);
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  background: var(--color-overlay-white-12);
+  border: 1px solid var(--color-overlay-white-14);
+  text-transform: capitalize;
+  color: var(--color-overlay-white-9);
+}
+
+/* ---- tier: cards.html `.tier-dot` ---- */
+.fc-badge--tier {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-caption);
+  font-weight: var(--font-weight-medium);
+  /* Text no longer takes the per-tier accent (mint/violet/gold/etc. all
+     read under 2:1 on the wash -- fine on the old dark bg, not here); the
+     dot below keeps the accent, since a small decorative swatch has no
+     contrast requirement. */
+  color: var(--color-page-ink-3);
+}
+.fc-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--fc-tier-color, var(--color-text-muted));
+  flex: none;
+}
+
+/* ---- score: match.html `.cc-score` ---- */
+.fc-badge--score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-0-5);
+  background: var(--color-overlay-black-28);
+  border: 1px solid var(--color-border-strong);
+  padding: var(--space-3-5) var(--space-6-5);
+  border-radius: var(--radius-xl);
+}
+.fc-badge__score-num {
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--text-1100);
+  line-height: 1.1;
+  color: var(--color-primary);
+}
+.fc-badge__score-label {
+  font-size: var(--text-50);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-overlay-white-6);
+}

@@ -1,0 +1,136 @@
+/* Card — see Card.jsx for which legacy selectors this replaces. */
+
+.fc-card {
+  position: relative;
+  border-radius: var(--radius-2xl);
+}
+
+/* ---- auth: templates/login.html etc. `.card` ---- */
+.fc-card--auth {
+  z-index: 1;
+  width: 100%;
+  max-width: 400px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-19) var(--space-17);
+  box-shadow: var(--shadow-lg);
+  animation: fc-card-fade-up var(--duration-slow) var(--ease-standard) forwards;
+}
+
+/* ---- plain: new, generic container (no legacy source) ---- */
+.fc-card--plain {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-12);
+}
+
+/* ---- recommendation: templates/match.html `.cc` ---- */
+.fc-card--recommendation {
+  --fc-card-i: 0;
+  padding: var(--space-11) var(--space-12);
+  color: var(--color-on-secondary);
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-out-snap),
+    box-shadow var(--duration-fast) var(--ease-standard);
+  opacity: 0;
+  transform-style: preserve-3d;
+  animation: fc-card-deal-in var(--duration-slow) var(--ease-out-soft) forwards;
+  animation-delay: calc(0.09s * var(--fc-card-i));
+  will-change: transform;
+}
+.fc-card--recommendation:hover {
+  box-shadow: var(--shadow-md);
+}
+.fc-card--recommendation::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(115deg, transparent, var(--color-overlay-white-4), transparent);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  animation: fc-card-shine var(--duration-shine) ease forwards;
+  animation-delay: calc(0.09s * var(--fc-card-i) + 0.45s);
+}
+.fc-card--recommendation::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(140px 140px at 88% 15%, var(--color-overlay-white-14), transparent 60%);
+}
+.fc-card--best {
+  animation: fc-card-deal-in var(--duration-slow) var(--ease-out-soft) forwards,
+    fc-card-best-glow var(--duration-loop-emphasis) ease-in-out 0.9s infinite;
+}
+
+.fc-card--static {
+  animation: none;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-card--auth,
+  .fc-card--recommendation {
+    animation: none;
+    opacity: 1;
+  }
+  .fc-card--recommendation::before,
+  .fc-card--best {
+    animation: none;
+  }
+}
+
+@keyframes fc-card-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fc-card-deal-in {
+  0% {
+    opacity: 0;
+    transform: perspective(1400px) rotateX(-30deg) rotateY(10deg) translateY(46px) scale(0.88);
+  }
+  55% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(1400px) rotateX(0) rotateY(0) translateY(0) scale(1);
+  }
+}
+
+@keyframes fc-card-shine {
+  0% {
+    left: -60%;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    left: 130%;
+    opacity: 0;
+  }
+}
+
+@keyframes fc-card-best-glow {
+  0%,
+  100% {
+    box-shadow: var(--shadow-sm), 0 0 0 0 var(--color-primary-a35);
+  }
+  50% {
+    box-shadow: var(--shadow-sm), 0 0 0 8px var(--color-primary-a0);
+  }
+}

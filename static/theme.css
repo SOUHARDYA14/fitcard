@@ -16,12 +16,32 @@
   --line:#2A313D; --text:#F2F4F8; --muted:#9AA4B2;
   --gold:#E5C07B; --mint:#34D399; --rose:#F87171;
   --r:16px;
+
+  /* Light-mode ink ramp -- WealthQ "dawn wash" palette, verbatim from
+     DESIGN_SPEC.md §2.1/§2.2. Used only by content painted directly on
+     the wash (bare headings/body/nav); anything with its own dark fill
+     (.card, inputs, .cc, .mock-card) keeps the tokens above unchanged. */
+  --p1:#F5F5F6; --p2:#ECEDEF; --p3:#DCDEE3; --p4:#C2C5CC;
+  --ink1:#14171C; --ink2:#2E323A; --ink3:#6B7080; --ink4:#9BA0AC; --ink5:#C8CBD2;
+  --hair:rgba(15,17,24,.06); --hair-strong:rgba(15,17,24,.10);
 }
 
-/* ---- Grain overlay: adds tactile, print-like texture ---- */
+/* ---- Dawn wash: the WealthQ signature background. Fixed, full-viewport,
+   behind everything. Verbatim three-layer gradient from DESIGN_SPEC.md §2.2. ---- */
+.dawn-wash{
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(58% 50% at 86% 96%, rgba(255,172,110,0.32) 0%, transparent 66%),
+    radial-gradient(54% 46% at  6%  0%, rgba(132,182,208,0.30) 0%, transparent 62%),
+    linear-gradient(180deg, #FFFFFF 0%, #FEFDFB 42%, #FFF3E6 100%);
+}
+
+/* ---- Grain overlay: adds tactile, print-like texture. Sits above
+   everything (including content) as soft-light so it reads on the light
+   wash instead of muddying it the way `overlay` did on the old dark bg. ---- */
 .grain{
-  position:fixed; inset:-10%; z-index:999; pointer-events:none;
-  opacity:.05; mix-blend-mode:overlay;
+  position:fixed; inset:-10%; z-index:60; pointer-events:none;
+  opacity:.34; mix-blend-mode:soft-light;
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   animation:grainShift 8s steps(8) infinite;
 }
@@ -71,9 +91,9 @@
 .eyebrow-vert{
   writing-mode:vertical-rl; text-orientation:mixed; transform:rotate(180deg);
   font-family:'Space Grotesk',sans-serif; font-size:11px; letter-spacing:.32em;
-  text-transform:uppercase; color:var(--muted,#9AA4B2); white-space:nowrap;
+  text-transform:uppercase; color:var(--ink3,#6B7080); white-space:nowrap;
 }
-.hairline{height:1px; background:linear-gradient(90deg,var(--line,#2A313D),transparent)}
+.hairline{height:1px; background:linear-gradient(90deg,var(--hair-strong,rgba(15,17,24,.10)),transparent)}
 .big-numeral{
   font-family:var(--serif); font-weight:600; font-style:italic;
   color:var(--gold,#E5C07B); line-height:.9;

@@ -12,18 +12,9 @@
   *{box-sizing:border-box;margin:0;padding:0}
   body{
     font-family:'Inter',system-ui,sans-serif;
-    background:
-      radial-gradient(900px 500px at 15% -10%, #1a2130 0%, transparent 60%),
-      radial-gradient(700px 500px at 110% 10%, #201a2b 0%, transparent 55%),
-      var(--ink);
-    background-attachment:fixed;
     color:var(--text); min-height:100vh; line-height:1.5;
     display:flex; align-items:center; justify-content:center; padding:40px 20px;
   }
-  .aurora{position:fixed; inset:0; z-index:0; pointer-events:none}
-  .aurora span{position:absolute; border-radius:50%; filter:blur(100px); opacity:.25}
-  .aurora span:nth-child(1){width:480px; height:480px; background:#3730a3; top:-160px; right:-140px}
-  .aurora span:nth-child(2){width:420px; height:420px; background:#7c3aed; bottom:-120px; left:-140px}
 
   .card{position:relative; z-index:1; width:100%; max-width:400px;
     background:var(--surface); border:1px solid var(--line); border-radius:var(--r);
@@ -75,8 +66,8 @@
 </head>
 <body>
 
+<div class="dawn-wash"></div>
 <div class="grain"></div>
-<div class="aurora"><span></span><span></span></div>
 
 <div class="card">
   <a href="/" class="brand"><span class="chip"></span>FitCard</a>

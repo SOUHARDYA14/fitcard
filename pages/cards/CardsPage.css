@@ -1,0 +1,190 @@
+/* Page-specific layout for CardsPage — the row/list/controls markup has
+   no equivalent in components/ (docs/COMPONENT_AUDIT.md's audit found
+   .row is a flat list row, not a Card, and left it that way on
+   purpose), so it's ported here directly from templates/cards.html's
+   inline <style>, translated onto design tokens.
+
+   The gradient-glow + grain background is now the <AmbientBackground>
+   component (rendered in CardsPage.jsx) rather than a flat body color
+   here — it initially shipped flat, which visibly didn't match the
+   still-legacy pages; see components/AmbientBackground.jsx.
+
+   Still not ported: the custom crosshair cursor (static/theme.js) — an
+   interaction behavior, not a background/color concern, left as its
+   own separate decision. */
+
+body {
+  margin: 0;
+  color: var(--color-page-ink-1);
+  font-family: var(--font-body);
+  line-height: var(--leading-normal);
+  min-height: 100vh;
+}
+
+.cardspage-wrap {
+  max-width: var(--container-base);
+  margin: 0 auto;
+  padding: var(--space-24) var(--space-10) var(--space-40);
+}
+
+.cardspage-intro {
+  display: grid;
+  grid-template-columns: 30px 1fr;
+  gap: var(--space-12);
+  margin-top: var(--space-13);
+}
+.cardspage-spine {
+  width: 1px;
+  background: linear-gradient(180deg, var(--color-primary), transparent);
+  min-height: 40px;
+}
+
+.cardspage-h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-medium);
+  font-style: italic;
+  font-size: var(--text-display-sm);
+  line-height: 1.06;
+  margin: 0 0 var(--space-4);
+  letter-spacing: var(--tracking-tight);
+}
+.cardspage-sub {
+  color: var(--color-page-ink-3);
+  font-size: var(--text-600);
+  margin: 0;
+}
+
+.cardspage-controls {
+  margin-top: var(--space-16);
+  margin-left: var(--space-27);
+  display: flex;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+  align-items: flex-end;
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-page-hair-strong);
+}
+.cardspage-search-field {
+  flex: 1;
+  min-width: 220px;
+}
+
+.cardspage-count {
+  color: var(--color-page-ink-3);
+  font-size: var(--text-400);
+  margin-top: var(--space-7);
+  margin-left: var(--space-27);
+}
+
+.cardspage-list {
+  margin-top: var(--space-3);
+  margin-left: var(--space-27);
+  display: flex;
+  flex-direction: column;
+}
+
+.cardspage-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  border-bottom: 1px solid var(--color-page-hair-strong);
+  padding: var(--space-9) var(--space-2);
+  flex-wrap: wrap;
+  transition: padding-left var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+.cardspage-row:hover {
+  padding-left: var(--space-6);
+  border-color: var(--color-primary-a40);
+}
+
+.cardspage-row-main {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-7);
+  min-width: 220px;
+}
+.cardspage-row-index {
+  font-family: var(--font-display);
+  font-style: italic;
+  /* var(--color-primary) gold reads at ~1.75:1 on the wash (fine on the
+     old dark bg) -- ink keeps the index legible without losing gold
+     entirely from the row (it stays on hover via border-color above). */
+  color: var(--color-page-ink-1);
+  font-size: var(--text-600);
+  min-width: 26px;
+}
+.cardspage-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.cardspage-row-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-800);
+}
+.cardspage-row-bank {
+  color: var(--color-page-ink-3);
+  font-size: var(--text-400);
+}
+.cardspage-row-suited {
+  color: var(--color-page-ink-3);
+  font-size: var(--text-300);
+  max-width: 280px;
+}
+
+.cardspage-row-stats {
+  display: flex;
+  gap: var(--space-11);
+  align-items: center;
+  flex-wrap: wrap;
+}
+.cardspage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 70px;
+}
+.cardspage-stat-label {
+  font-size: var(--text-100);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-page-ink-3);
+}
+.cardspage-stat-val {
+  font-family: var(--font-label);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-500);
+}
+
+.cardspage-empty {
+  color: var(--color-page-ink-3);
+  text-align: center;
+  padding: var(--space-20) 0;
+  font-size: var(--text-500);
+}
+
+@media (max-width: 640px) {
+  .cardspage-intro {
+    grid-template-columns: 1fr;
+  }
+  .cardspage-spine {
+    display: none;
+  }
+  .cardspage-controls,
+  .cardspage-count,
+  .cardspage-list {
+    margin-left: 0;
+  }
+  .cardspage-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .cardspage-row-stats {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

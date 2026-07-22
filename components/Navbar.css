@@ -1,0 +1,131 @@
+/* Navbar — see Navbar.jsx for which legacy selectors this replaces. */
+
+.fc-navbar__brand {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-900); /* 19px, matches back-link/brand-only variants */
+  letter-spacing: var(--tracking-tight);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--color-page-ink-1);
+  text-decoration: none;
+}
+.fc-navbar__chip {
+  width: 20px;
+  height: 15px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--color-primary-chip-start), var(--color-primary-chip-end));
+  display: inline-block;
+}
+.fc-navbar__chip--lg {
+  width: 22px;
+  height: 16px;
+}
+
+/* ---- full: templates/welcome.html <nav> ---- */
+.fc-navbar--full {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-11);
+}
+.fc-navbar--full .fc-navbar__brand {
+  font-size: var(--text-1100); /* 22px */
+  gap: var(--space-4);
+}
+.fc-navbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-14);
+}
+.fc-navbar__issue-tag {
+  font-family: var(--font-label);
+  font-size: var(--text-200);
+  letter-spacing: var(--tracking-eyebrow);
+  color: var(--color-page-ink-3);
+  text-transform: uppercase;
+  display: none; /* legacy .issue-tag is display:none by default */
+}
+.fc-navbar__links {
+  display: flex;
+  gap: var(--space-11);
+}
+.fc-navbar__links a {
+  color: var(--color-page-ink-3);
+  text-decoration: none;
+  font-size: var(--text-500);
+  font-weight: var(--font-weight-medium);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.fc-navbar__links a:hover {
+  color: var(--color-page-ink-1);
+}
+
+/* ---- back-link: templates/cards.html & templates/match.html .hero-row ---- */
+.fc-navbar--back-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-9);
+  animation: fc-navbar-fade-up var(--duration-slow) var(--ease-standard) forwards;
+}
+.fc-navbar--back-link .fc-navbar__right {
+  gap: var(--space-9);
+}
+.fc-navbar__back-link {
+  font-size: var(--text-caption);
+  /* var(--color-success) mint reads at ~1.6:1 on the wash (fine on the old
+     dark bg) -- same ink-chrome treatment as the other nav links, hover
+     darkens instead of relying on a bare accent color. */
+  color: var(--color-page-ink-3);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+.fc-navbar__back-link:hover {
+  color: var(--color-page-ink-1);
+}
+
+/* ---- brand-only: templates/login.html etc. .brand (inside the auth Card) ----
+   Unlike the full/back-link variants above (bare on the open wash), this
+   renders inside the dark auth Card, so it keeps the original dark-panel
+   token instead of the light-ink one .fc-navbar__brand uses by default. */
+.fc-navbar--brand-only {
+  margin-bottom: var(--space-13);
+}
+.fc-navbar--brand-only .fc-navbar__brand {
+  color: var(--color-text);
+}
+
+/* ---- masthead rule ---- */
+.fc-navbar__masthead-rule {
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-page-hair-strong), transparent);
+}
+.fc-navbar__hairline {
+  width: 1px;
+  height: 1px;
+}
+
+@keyframes fc-navbar-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fc-navbar--back-link {
+    animation: none;
+    opacity: 1;
+  }
+}

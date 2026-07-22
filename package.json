@@ -1,0 +1,19 @@
+{
+  "name": "fitcard-frontend",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "React island entries for FitCard, built by Vite and served by Flask from static/dist/. See docs/FITCARD_DESIGN_SPEC.md and the plan behind this file.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.11"
+  }
+}
