@@ -3,35 +3,29 @@
 (function(){
   const isCoarse = window.matchMedia("(pointer:coarse)").matches;
 
-  // ---- Custom cursor (dot snaps instantly, ring eases behind) ----
+  // ---- Custom cursor (crosshair, snaps instantly to the pointer) ----
   if (!isCoarse) {
-    const dot = document.createElement("div");
-    dot.className = "cursor-dot";
-    const ring = document.createElement("div");
-    ring.className = "cursor-ring";
-    document.body.append(dot, ring);
+    const crosshair = document.createElement("div");
+    crosshair.className = "cursor-crosshair";
+    const hLine = document.createElement("span");
+    hLine.className = "h-line";
+    const vLine = document.createElement("span");
+    vLine.className = "v-line";
+    crosshair.append(hLine, vLine);
+    document.body.append(crosshair);
 
-    let mx = window.innerWidth / 2, my = window.innerHeight / 2;
-    let rx = mx, ry = my;
     window.addEventListener("mousemove", (e) => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+      crosshair.style.transform = `translate(${e.clientX}px, ${e.clientY}px) translate(-50%,-50%)`;
     });
-    (function loop(){
-      rx += (mx - rx) * 0.18;
-      ry += (my - ry) * 0.18;
-      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-      requestAnimationFrame(loop);
-    })();
 
     document.addEventListener("mouseover", (e) => {
       if (e.target.closest("a, button, input, select, .magnetic, .cc, .row")) {
-        ring.classList.add("hover");
+        crosshair.classList.add("hover");
       }
     });
     document.addEventListener("mouseout", (e) => {
       if (e.target.closest("a, button, input, select, .magnetic, .cc, .row")) {
-        ring.classList.remove("hover");
+        crosshair.classList.remove("hover");
       }
     });
   }

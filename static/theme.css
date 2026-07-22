@@ -23,20 +23,28 @@
   80%{transform:translate(-3%,-2%)} 90%{transform:translate(2%,2%)}
 }
 
-/* ---- Custom cursor: dot + lagging ring ---- */
-.cursor-dot, .cursor-ring{
+/* ---- Custom cursor: crosshair (two thin gold lines with a center gap,
+   snaps instantly to the pointer, widens slightly over interactive els) ---- */
+.cursor-crosshair{
   position:fixed; top:0; left:0; z-index:1000; pointer-events:none;
-  border-radius:50%; transform:translate(-50%,-50%);
-  will-change:transform;
+  width:22px; height:22px; transform:translate(-50%,-50%);
+  will-change:transform; transition:width .2s ease, height .2s ease;
 }
-.cursor-dot{width:6px; height:6px; background:var(--gold,#E5C07B)}
-.cursor-ring{
-  width:34px; height:34px; border:1px solid rgba(229,192,123,.55);
-  transition:width .2s ease, height .2s ease, border-color .2s ease, opacity .2s ease;
+.cursor-crosshair .h-line, .cursor-crosshair .v-line{
+  position:absolute; opacity:.85; transition:opacity .2s ease;
 }
-.cursor-ring.hover{width:52px; height:52px; border-color:rgba(229,192,123,.9); background:rgba(229,192,123,.08)}
+.cursor-crosshair .h-line{
+  top:50%; left:0; width:100%; height:1.5px; transform:translateY(-50%);
+  background:linear-gradient(to right, var(--gold,#E5C07B) 0 35%, transparent 35% 65%, var(--gold,#E5C07B) 65% 100%);
+}
+.cursor-crosshair .v-line{
+  left:50%; top:0; width:1.5px; height:100%; transform:translateX(-50%);
+  background:linear-gradient(to bottom, var(--gold,#E5C07B) 0 35%, transparent 35% 65%, var(--gold,#E5C07B) 65% 100%);
+}
+.cursor-crosshair.hover{width:32px; height:32px}
+.cursor-crosshair.hover .h-line, .cursor-crosshair.hover .v-line{opacity:1}
 @media (pointer:coarse), (hover:none){
-  .cursor-dot, .cursor-ring{display:none}
+  .cursor-crosshair{display:none}
 }
 
 /* ---- Scroll reveal ---- */
