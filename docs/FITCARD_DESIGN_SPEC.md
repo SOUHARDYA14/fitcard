@@ -281,17 +281,18 @@ duration-collapse alone for something with `infinite`.
 
 ## 10. Responsive Rules
 
-**Standard**: Mobile `< 640px` / Tablet `640–1023px` / Desktop `≥ 1024px`.
-Formalizes what the live site already does consistently — audited across
-all 7 pages, only `640px` and `1024px` are used anywhere, no drift
-(`docs/UI_AUDIT.md`). 4 of 7 pages (the auth flows) have no media queries
-at all — fixed-width cards that don't need to respond.
+**Standard**: Mobile `< 640px` / Tablet `640–879px` / Desktop `≥ 880px`.
+Revised 2026-07-23 (debt #4): the desktop split moved from `1024px` to
+`880px` to match the Next.js side's `sm`(640)/custom-`880` Tailwind screens
+one-for-one — `lg` is retired there, so `1024` no longer anchors anything
+on either side. 4 of 7 pages (the auth flows) have no media queries at
+all — fixed-width cards that don't need to respond.
 
 **Important limitation**: `--breakpoint-sm`/`--breakpoint-md` in
 `styles/tokens.css` are reference values only. CSS custom properties
 cannot be used inside an `@media` condition
 (`@media (max-width: var(--breakpoint-sm))` is invalid everywhere) — so
-new `@media` rules must hand-write `640px`/`1024px` to match the standard,
+new `@media` rules must hand-write `640px`/`880px` to match the standard,
 not attempt to reference the token. Making that programmatic would
 require a build-time tool (`postcss-custom-media`), which this project
 doesn't have.

@@ -232,7 +232,7 @@
   --space-24: 48px;
   --space-27: 54px;  /* margin-left — form/list indent past the vertical spine rule */
   --space-28: 56px;
-  --space-30: 60px;  /* welcome .stats margin-top under the 1024px breakpoint */
+  --space-30: 60px;  /* welcome .stats margin-top under the 880px breakpoint */
   --space-40: 80px;
   --space-60: 120px; /* welcome .stats margin-top, desktop */
 
@@ -247,13 +247,13 @@
   --container-wide:   1160px; /* welcome.html .wrap / footer */
 
   /* Breakpoint standard — Mobile / Tablet / Desktop.
-     Audited 2026-07-22: every @media width query across all 7 pages
-     already uses one of exactly these two values, consistently (no
-     duplicates/drift found — see docs/UI_AUDIT.md). Documented here
-     as the canonical standard going forward.
+     Audited 2026-07-22, revised 2026-07-23 (debt #4): desktop split moved
+     1024px -> 880px so it lines up with the Next.js side's custom Tailwind
+     screen of the same name; `lg` is no longer used there, so 1024 has no
+     anchor left on either side.
        Mobile:  < 640px             (no breakpoint needed — base styles)
-       Tablet:  640px – 1023px      → --breakpoint-sm  (max-width:640px queries)
-       Desktop: >= 1024px           → --breakpoint-md  (max-width:1024px queries)
+       Tablet:  640px – 879px       → --breakpoint-sm  (max-width:640px queries)
+       Desktop: >= 880px            → --breakpoint-md  (max-width:880px queries)
      Note: CSS custom properties cannot be referenced inside an
      @media condition (`@media (max-width: var(--breakpoint-sm))` is
      invalid CSS in every browser), so these stay reference values for
@@ -261,7 +261,7 @@
      consume — that would require a build step (e.g. postcss-custom-media),
      which this project doesn't have. */
   --breakpoint-sm: 640px;  /* Tablet upper bound / mobile-tablet split */
-  --breakpoint-md: 1024px; /* Desktop lower bound / tablet-desktop split */
+  --breakpoint-md: 880px;  /* Desktop lower bound / tablet-desktop split */
 
   /* ----------------------------------------------------------
      Border radius scale
